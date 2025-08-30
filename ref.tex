@@ -1,39 +1,82 @@
 \documentclass[tikz,border=5pt]{standalone}
 \usepackage{tikz}
+\usepackage{musixtex}
 \usetikzlibrary{calc}
 
+% Boolean flag for rotating key signatures
+\newif\ifRotateKeysigs
+%\RotateKeysigstrue   % default: rotated
+%\RotateKeysigsfalse % uncomment to keep upright
+
+\newsavebox{\MusicBox}
+
+% Create a small pentagram and store in \MusicBox
+\newcommand{\keysig}[1]{%
+  \begingroup
+  \setlength{\unitlength}{1mm}%
+  \resizebox{!}{6mm}{%
+    \begin{music}
+      \parindent0pt
+      \smallmusicsize
+      \nobarnumbers
+      \instrumentnumber{1}
+      \setstaffs{1}{1}
+      \setclef{1}{\treble}
+      \generalsignature{#1}
+      \startextract
+        \Notes\en
+      \endextract
+    \end{music}%
+  }%
+  \endgroup
+}
+
+% Draw the wheel
 \newcommand{\drawCircularSectors}[3]{%
     \pgfmathsetmacro{\n}{0}%
-    \foreach \x in {#3} {\pgfmathparse{\n+1}\global\let\n=\pgfmathresult}%
-    \pgfmathsetmacro{\anglestep}{360/\n}
-    \pgfmathsetmacro{\offset}{\anglestep/2}
-    \foreach \i [count=\j] in {#3} {
+    \foreach \x/\y in {#3} {\pgfmathparse{\n+1}\global\let\n=\pgfmathresult}%
+    \pgfmathsetmacro{\anglestep}{360/\n}%
+    \pgfmathsetmacro{\offset}{\anglestep/2}%
+
+    \foreach \note/\col/\sig [count=\j] in {#3} {
         \pgfmathsetmacro{\startangle}{90-(\j-1)*\anglestep+\offset}%
         \pgfmathsetmacro{\endangle}{\startangle-\anglestep}%
         \pgfmathsetmacro{\midangle}{\startangle-\anglestep/2}%
-        \pgfmathsetmacro{\midradius}{(#1+#2)/2}%
-        \fill[blue!20]
-            (\startangle:#1)
-            arc (\startangle:\endangle:#1)
-            -- (\endangle:#2)
-            arc (\endangle:\startangle:#2) -- cycle;
+        \pgfmathsetmacro{\midradius}{(2+4)/2}%
 
-        \draw[thick] (\startangle:#1) -- (\startangle:#2);
-        \draw[thick] (\endangle:#1) -- (\endangle:#2);
-        \node[rotate=\midangle-90] at (\midangle:\midradius) {\i};
+        % Draw sector
+        \fill[\col]
+            (\startangle:2) arc (\startangle:\endangle:2) --
+            (\endangle:4) arc (\endangle:\startangle:4) -- cycle;
+
+        % Sector lines
+        \draw[thick] (\startangle:2) -- (\startangle:4);
+        \draw[thick] (\endangle:2) -- (\endangle:4);
+
+        % Note label
+        \node[rotate=\midangle-90, font=\bfseries\large] at (\midangle:\midradius) {\note};
+
+        % Place pentagram outside wheel
+        \ifRotateKeysigs
+          \node[anchor=center, rotate=\midangle-90] at (\midangle:4.6) {\keysig{\sig}};
+        \else
+          \node[anchor=center] at (\midangle:4.6) {\keysig{\sig}};
+        \fi
     }
-    \draw[thick] (0,0) circle (#2);
-    \draw[thick] (0,0) circle (#1);
+
+    % Draw circles
+    \draw[thick] (0,0) circle (4);
+    \draw[thick] (0,0) circle (2);
 }
 
 \begin{document}
 
-\begin{tikzpicture}[every node/.style={font=\sffamily}]
-\drawCircularSectors{4}{4.5}{{Em},{Am},{Bm},{Em},{F$\sharp$m},{Bm},{C$\sharp$m},{F$\sharp$m},{G$\sharp$m},{C$\sharp$m},{D$\sharp$m},{G$\sharp$m},{A$\sharp$m},{D$\sharp$m},{F},{A$\sharp$m},{Cm},{Fm},{Gm},{Cm},{Dm},{Gm},{Am},{Dm}}
-
-\drawCircularSectors{2.5}{3}{{B\textsuperscript{$\circ$}},{F$\sharp$\textsuperscript{$\circ$}},{C$\sharp$\textsuperscript{$\circ$}},{G$\sharp$\textsuperscript{$\circ$}},{D$\sharp$\textsuperscript{$\circ$}},{A$\sharp$\textsuperscript{$\circ$}},{F\textsuperscript{$\circ$}},{C\textsuperscript{$\circ$}},{G\textsuperscript{$\circ$}},{D\textsuperscript{$\circ$}},{A\textsuperscript{$\circ$}},{E\textsuperscript{$\circ$}}}
-
-\drawCircularSectors{3}{4}{{C},{G},{D},{A},{E},{B},{F$\sharp$},{C$\sharp$},{G$\sharp$},{D$\sharp$},{A$\sharp$},{F}}
+\begin{tikzpicture}
+\drawCircularSectors
+    {1} % inner radius
+    {4} % outer radius
+    {C/red/0,G/green/1,D/yellow/2,A/blue/3,E/red!70!black/4,B/yellow!30!white/5,F$\sharp$/cyan/6,
+ C$\sharp$/cyan/-5,G$\sharp$/blue!70!black/-4,E$\flat$/yellow!70!black/-3,B$\flat$/yellow!70!white/-2,F/red!70!black/-1}
 \end{tikzpicture}
 
 \end{document}
