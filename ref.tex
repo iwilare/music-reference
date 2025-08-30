@@ -3,28 +3,23 @@
 \usepackage{musixtex}
 \usetikzlibrary{calc}
 
+\def\distanceScale{0.7} % distance from outer circle to key signature
+
 % Boolean flag for rotating key signatures
 \newif\ifRotateKeysigs
 %\RotateKeysigstrue   % default: rotated
-%\RotateKeysigsfalse % uncomment to keep upright
+\RotateKeysigsfalse % uncomment to keep upright
 
 \newsavebox{\MusicBox}
 
 % Create a small pentagram and store in \MusicBox
 \newcommand{\keysig}[1]{%
   \begingroup
-  \setlength{\unitlength}{1mm}%
-  \resizebox{!}{6mm}{%
+  \resizebox{!}{12mm}{%
     \begin{music}
-      \parindent0pt
-      \smallmusicsize
-      \nobarnumbers
-      \instrumentnumber{1}
-      \setstaffs{1}{1}
-      \setclef{1}{\treble}
+      \setclefsymbol1{\hspace{0.3em}}
       \generalsignature{#1}
       \startextract
-        \Notes\en
       \endextract
     \end{music}%
   }%
@@ -42,41 +37,55 @@
         \pgfmathsetmacro{\startangle}{90-(\j-1)*\anglestep+\offset}%
         \pgfmathsetmacro{\endangle}{\startangle-\anglestep}%
         \pgfmathsetmacro{\midangle}{\startangle-\anglestep/2}%
-        \pgfmathsetmacro{\midradius}{(2+4)/2}%
+        \pgfmathsetmacro{\midradius}{(#1+#2)/2}%
 
         % Draw sector
         \fill[\col]
-            (\startangle:2) arc (\startangle:\endangle:2) --
-            (\endangle:4) arc (\endangle:\startangle:4) -- cycle;
+            (\startangle:#1) arc (\startangle:\endangle:#1) --
+            (\endangle:#2) arc (\endangle:\startangle:#2) -- cycle;
 
         % Sector lines
-        \draw[thick] (\startangle:2) -- (\startangle:4);
-        \draw[thick] (\endangle:2) -- (\endangle:4);
+        \draw[thick] (\startangle:#1) -- (\startangle:#2);
+        \draw[thick] (\endangle:#1) -- (\endangle:#2);
 
         % Note label
-        \node[rotate=\midangle-90, font=\bfseries\large] at (\midangle:\midradius) {\note};
+        \ifRotateKeysigs
+          \node[rotate=\midangle-90, font=\bfseries\large] at (\midangle:\midradius) {\note};
+        \else
+          \node[font=\bfseries\large] at (\midangle:\midradius) {\note};
+        \fi
 
         % Place pentagram outside wheel
         \ifRotateKeysigs
-          \node[anchor=center, rotate=\midangle-90] at (\midangle:4.6) {\keysig{\sig}};
+          \node[anchor=center, inner sep=0pt, outer sep=0pt, rotate=\midangle-90, transform shape] at (\midangle:{#2+\distanceScale}) {\keysig{\sig}};
         \else
-          \node[anchor=center] at (\midangle:4.6) {\keysig{\sig}};
+          \node[anchor=center, inner sep=0pt, outer sep=0pt] at (\midangle:{#2+\distanceScale}) {\keysig{\sig}};
         \fi
     }
 
     % Draw circles
-    \draw[thick] (0,0) circle (4);
-    \draw[thick] (0,0) circle (2);
+    \draw[thick] (0,0) circle (#2);
+    \draw[thick] (0,0) circle (#1);
 }
 
 \begin{document}
 
 \begin{tikzpicture}
 \drawCircularSectors
-    {1} % inner radius
-    {4} % outer radius
-    {C/red/0,G/green/1,D/yellow/2,A/blue/3,E/red!70!black/4,B/yellow!30!white/5,F$\sharp$/cyan/6,
- C$\sharp$/cyan/-5,G$\sharp$/blue!70!black/-4,E$\flat$/yellow!70!black/-3,B$\flat$/yellow!70!white/-2,F/red!70!black/-1}
+    {1.2} % inner radius
+    {2.2} % outer radius
+    {C/cyan!10!white/ 0,
+     G/cyan!10!white/ 1,
+     D/cyan!10!white/ 2,
+     A/cyan!10!white/ 3,
+     E/cyan!10!white/ 4,
+     B/cyan!10!white/ 5,
+     F$\sharp$/cyan!10!white/ 6,
+     C$\sharp$/cyan!10!white/-5,
+     G$\sharp$/cyan!10!white/-4,
+     E$\flat$/cyan!10!white/-3,
+     B$\flat$/cyan!10!white/-2,
+     F/cyan!10!white/-1}
 \end{tikzpicture}
 
 \end{document}
