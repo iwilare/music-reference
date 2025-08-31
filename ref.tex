@@ -1,91 +1,166 @@
 \documentclass[tikz,border=5pt]{standalone}
 \usepackage{tikz}
-\usepackage{musixtex}
+\usepackage{xparse}
 \usetikzlibrary{calc}
 
-\def\distanceScale{0.7} % distance from outer circle to key signature
-
-% Boolean flag for rotating key signatures
-\newif\ifRotateKeysigs
-%\RotateKeysigstrue   % default: rotated
-\RotateKeysigsfalse % uncomment to keep upright
-
-\newsavebox{\MusicBox}
-
-% Create a small pentagram and store in \MusicBox
-\newcommand{\keysig}[1]{%
-  \begingroup
-  \resizebox{!}{12mm}{%
-    \begin{music}
-      \setclefsymbol1{\hspace{0.3em}}
-      \generalsignature{#1}
-      \startextract
-      \endextract
-    \end{music}%
-  }%
-  \endgroup
+% Define note names
+\newcommand{\noteName}[1]{%
+  \ifcase#1
+      C%
+  \or C$\sharp$%
+  \or D%
+  \or E$\flat$%
+  \or E%
+  \or F%
+  \or F$\sharp$%
+  \or G%
+  \or G$\sharp$%
+  \or A%
+  \or B$\flat$%
+  \or B%
+  \else ?%
+  \fi
+}
+\newcommand{\noteNameAlt}[1]{%
+  \ifcase#1
+      C%
+  \or C$\sharp$%
+  \or D%
+  \or E$\flat$%
+  \or E%
+  \or F%
+  \or F$\sharp$%
+  \or G%
+  \or A$\flat$%
+  \or A%
+  \or B$\flat$%
+  \or B%
+  \else ?%
+  \fi
 }
 
-% Draw the wheel
-\newcommand{\drawCircularSectors}[3]{%
-    \pgfmathsetmacro{\n}{0}%
-    \foreach \x/\y in {#3} {\pgfmathparse{\n+1}\global\let\n=\pgfmathresult}%
-    \pgfmathsetmacro{\anglestep}{360/\n}%
-    \pgfmathsetmacro{\offset}{\anglestep/2}%
+\newcommand{\convert}[1]{%
+  \ifcase#1
+      0
+  \or -5
+  \or 2
+  \or -3
+  \or 4
+  \or -1
+  \or 6
+  \or 1
+  \or -4
+  \or 3
+  \or -2
+  \or 5
+  \else ?%
+  \fi
+}
 
-    \foreach \note/\col/\sig [count=\j] in {#3} {
-        \pgfmathsetmacro{\startangle}{90-(\j-1)*\anglestep+\offset}%
-        \pgfmathsetmacro{\endangle}{\startangle-\anglestep}%
-        \pgfmathsetmacro{\midangle}{\startangle-\anglestep/2}%
-        \pgfmathsetmacro{\midradius}{(#1+#2)/2}%
+\NewDocumentCommand{\getNote}{ O{0} m }{%
+  \pgfmathtruncatemacro{\idx}{mod(#2+#1+12,12)}%
+  \noteName{\idx}%
+}
+\NewDocumentCommand{\getNoteAlt}{ O{0} m }{%
+  \pgfmathtruncatemacro{\idx}{mod(#2+#1+12,12)}%
+  \noteNameAlt{\idx}%
+}
 
-        % Draw sector
-        \fill[\col]
-            (\startangle:#1) arc (\startangle:\endangle:#1) --
-            (\endangle:#2) arc (\endangle:\startangle:#2) -- cycle;
+\def\col{blue!30}
 
-        % Sector lines
-        \draw[thick] (\startangle:#1) -- (\startangle:#2);
-        \draw[thick] (\endangle:#1) -- (\endangle:#2);
+% distance of small key signatures from outer circle
+\def\keySigDistance{0.65}
 
-        % Note label
-        \ifRotateKeysigs
-          \node[rotate=\midangle-90, font=\bfseries\large] at (\midangle:\midradius) {\note};
-        \else
-          \node[font=\bfseries\large] at (\midangle:\midradius) {\note};
+% Define positions of sharps and flats in treble clef (relative to bottom staff line index 0)
+% For y positions we use: 0=line1(E), 0.5=space1(F), 1=line2(G), 1.5=space2(A), 2=line3(B), 2.5=space3(C), 3=line4(D), 3.5=space4(E), 4=line5(F)
+% Sharp order: F, C, G, D, A, E, B  -> y {4,2.5,1,3,1.5,3.5,2}
+% Flat order:  B, E, A, D, G, C, F  -> y {2,3.5,1.5,3,1,2.5,4}
+\newcommand{\sharpPos}{4,2.5,4.8,3,1.5,3.5,2}
+\newcommand{\flatPos}{2,3.5,1.5,3,1,2.5,4}
+
+% Macro to draw staff and key signature (compact, with vertical lines)
+\newcommand{\drawKeySignature}[1]{%
+    % #1 is a pitch-class index (0..11). Use \convert to get number of accidentals.
+    \begingroup
+      \edef\accraw{\convert{#1}}%
+      \pgfmathtruncatemacro{\acc}{\accraw}%
+      \begin{tikzpicture}[baseline=(staff.base),scale=0.50,every node/.style={inner sep=0pt,outer sep=0pt}]
+        \coordinate (staff) at (0,0);
+        % compact staff parameters
+        \def\staffwidth{1.75}
+        \def\ystep{0.219}
+        % short staff lines
+        \foreach \y in {0,...,4} {\draw (0,\y*\ystep) -- (\staffwidth,\y*\ystep);}
+        % thin vertical bar lines at left and right to visually bound the staff
+        \draw[line width=0.4pt] (0,-0.02) -- (0,4*\ystep+0.02);
+        \draw[line width=0.4pt] (\staffwidth,-0.02) -- (\staffwidth,4*\ystep+0.02);
+        % sharps
+        \ifnum\acc>0
+          \pgfmathtruncatemacro{\countacc}{\acc}
+          \foreach [count=\i] \pos in \sharpPos {%
+            \ifnum\i>\countacc\relax\else
+              % compute x position so accidentals form a compact cluster
+              \pgfmathsetmacro{\xpos}{0.25*(\i-1)+0.23}%
+              \node at (\xpos,\pos*\ystep+0.02) {\small$\sharp$};
+            \fi
+          }
         \fi
-
-        % Place pentagram outside wheel
-        \ifRotateKeysigs
-          \node[anchor=center, inner sep=0pt, outer sep=0pt, rotate=\midangle-90, transform shape] at (\midangle:{#2+\distanceScale}) {\keysig{\sig}};
-        \else
-          \node[anchor=center, inner sep=0pt, outer sep=0pt] at (\midangle:{#2+\distanceScale}) {\keysig{\sig}};
+        % flats
+        \ifnum\acc<0
+          \pgfmathtruncatemacro{\countacc}{abs(\acc)}
+          \foreach [count=\i] \pos in \flatPos {%
+            \ifnum\i>\countacc\relax\else
+              \pgfmathsetmacro{\xpos}{0.25*(\i-1)+0.23}%
+              \node at (\xpos,\pos*\ystep+0.09) {\small$\flat$};
+            \fi
+          }
         \fi
-    }
+      \end{tikzpicture}
+    \endgroup
+}
 
-    % Draw circles
-    \draw[thick] (0,0) circle (#2);
-    \draw[thick] (0,0) circle (#1);
+\newcommand{\drawCircularSectors}[2]{%
+  \pgfmathsetmacro{\anglestep}{360/12}%
+  \pgfmathsetmacro{\offset}{\anglestep/2}%
+  \foreach \j in {0,...,11} {%
+      \pgfmathsetmacro{\startangle}{90-\j*\anglestep+\offset}%
+      \pgfmathsetmacro{\endangle}{\startangle-\anglestep}%
+      \pgfmathsetmacro{\midangle}{\startangle-\anglestep/2}%
+      \pgfmathsetmacro{\midradius}{(#1+#2)/2}%
+      \pgfmathtruncatemacro{\notenumber}{7*\j}%
+      \pgfmathtruncatemacro{\notenumbermod}{mod(\notenumber,12)}%
+
+      % Text values must use \def, not \pgfmathsetmacro
+      \def\note{\getNote{\notenumber}}%
+      \def\saxnote{\getNoteAlt[-2]{\notenumber}}%
+
+      % Draw sector
+      \fill[\col]
+          (\startangle:#1) arc (\startangle:\endangle:#1) --
+          (\endangle:#2) arc (\endangle:\startangle:#2) -- cycle;
+
+      % Sector lines
+      \draw[thick] (\startangle:#1) -- (\startangle:#2);
+      \draw[thick] (\endangle:#1) -- (\endangle:#2);
+
+      % Note label
+      \node[font=\bfseries\large, inner sep=-1.8pt] (main) at (\midangle:\midradius) {\note};
+
+      % Sax note, anchored below without affecting the main node
+      \node[font=\scriptsize, anchor=north, text=white!30!black] at (main.south) {\saxnote};
+
+      % place compact key signature slightly further out and centered
+      \node[anchor=center] at (\midangle:{#2+\keySigDistance}) {\drawKeySignature{\notenumbermod}};
+
+  }
+
+  % Draw circles
+  \draw[thick] (0,0) circle (#2);
+  \draw[thick] (0,0) circle (#1);
 }
 
 \begin{document}
-
 \begin{tikzpicture}
-\drawCircularSectors
-    {1.2} % inner radius
-    {2.2} % outer radius
-    {C/cyan!10!white/ 0,
-     G/cyan!10!white/ 1,
-     D/cyan!10!white/ 2,
-     A/cyan!10!white/ 3,
-     E/cyan!10!white/ 4,
-     B/cyan!10!white/ 5,
-     F$\sharp$/cyan!10!white/ 6,
-     C$\sharp$/cyan!10!white/-5,
-     G$\sharp$/cyan!10!white/-4,
-     E$\flat$/cyan!10!white/-3,
-     B$\flat$/cyan!10!white/-2,
-     F/cyan!10!white/-1}
+\drawCircularSectors{1.4}{2.4}
 \end{tikzpicture}
-
 \end{document}
