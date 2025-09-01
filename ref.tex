@@ -69,11 +69,11 @@
 \def\col{blue!30}
 
 % distance of small key signatures from outer circle
-\def\keySigDistance{0.65}
+\def\keySigDistance{1.2}
 
 % Define positions of sharps and flats in treble clef (relative to bottom staff line index 0)
 % For y positions we use: 0=line1(E), 0.5=space1(F), 1=line2(G), 1.5=space2(A), 2=line3(B), 2.5=space3(C), 3=line4(D), 3.5=space4(E), 4=line5(F)
-% Sharp order: F, C, G, D, A, E, B  -> y {4,2.5,1,3,1.5,3.5,2}
+% Sharp order: F, C, G, D, A, E, B  -> y {4,2.5,4.8,3,1.5,3.5,2}
 % Flat order:  B, E, A, D, G, C, F  -> y {2,3.5,1.5,3,1,2.5,4}
 \newcommand{\sharpPos}{4.05,2.5,4.8,3,1.5,3.5,2}
 \newcommand{\flatPos}{2,3.5,1.5,3,1,2.5,4}
@@ -119,48 +119,64 @@
     \endgroup
 }
 
-\newcommand{\drawCircularSectors}[2]{%
-  \pgfmathsetmacro{\anglestep}{360/12}%
+\newcommand{\drawCircularSectors}[4]{%
+  % #1 = inner radius, #2 = ring width (outer = inner + width), #3 = number of divisions, #4 = placement macro
+  \pgfmathsetmacro{\innerradius}{#1}%
+  \pgfmathsetmacro{\widthcircle}{#2}%
+  \pgfmathsetmacro{\outerradius}{\innerradius+\widthcircle}%
+  \pgfmathsetmacro{\anglestep}{360/#3}%
   \pgfmathsetmacro{\offset}{\anglestep/2}%
-  \foreach \j in {0,...,11} {%
+  \pgfmathtruncatemacro{\N}{#3-1}%
+  \foreach \j in {0,...,\N} {%
       \pgfmathsetmacro{\startangle}{90-\j*\anglestep+\offset}%
       \pgfmathsetmacro{\endangle}{\startangle-\anglestep}%
       \pgfmathsetmacro{\midangle}{\startangle-\anglestep/2}%
-      \pgfmathsetmacro{\midradius}{(#1+#2)/2}%
-      \pgfmathtruncatemacro{\notenumber}{7*\j}%
-      \pgfmathtruncatemacro{\notenumbermod}{mod(\notenumber,12)}%
-
-      % Text values must use \def, not \pgfmathsetmacro
-      \def\note{\getNote{\notenumber}}%
-      \def\saxnote{\getNoteAlt[-2]{\notenumber}}%
+      \pgfmathsetmacro{\midradius}{\innerradius+\widthcircle/2}%
 
       % Draw sector
       \fill[\col]
-          (\startangle:#1) arc (\startangle:\endangle:#1) --
-          (\endangle:#2) arc (\endangle:\startangle:#2) -- cycle;
+          (\startangle:\innerradius) arc (\startangle:\endangle:\innerradius) --
+          (\endangle:\outerradius) arc (\endangle:\startangle:\outerradius) -- cycle;
 
       % Sector lines
-      \draw[thick] (\startangle:#1) -- (\startangle:#2);
-      \draw[thick] (\endangle:#1) -- (\endangle:#2);
+      \draw[thick] (\startangle:\innerradius) -- (\startangle:\outerradius);
+      \draw[thick] (\endangle:\innerradius) -- (\endangle:\outerradius);
 
-      % Note label
-      \node[font=\bfseries\large, inner sep=-1.8pt] (main) at (\midangle:\midradius) {\note};
-
-      % Sax note, anchored below without affecting the main node
-      \node[font=\scriptsize, anchor=north, text=white!30!black] at (main.south) {\saxnote};
-
-      % place compact key signature slightly further out and centered
-      \node[anchor=center] at (\midangle:{#2+\keySigDistance}) {\drawKeySignature{\notenumbermod}};
-
+      % Call the user-supplied per-sector content macro
+      % Macro signature: #4{<sector-index>}{<midangle>}{<midradius>}
+      #4{\j}{\midangle}{\midradius}%
   }
 
   % Draw circles
-  \draw[thick] (0,0) circle (#2);
-  \draw[thick] (0,0) circle (#1);
+  \draw[thick] (0,0) circle (\outerradius);
+  \draw[thick] (0,0) circle (\innerradius);
+}
+
+% Default per-sector content: compute note and sax label locally from the sector index
+\newcommand{\sectorNodeDefault}[3]{%
+  % #1 index, #2 midangle, #3 midradius
+  % compute pitch-class from index: 7*j mod 12
+  \pgfmathtruncatemacro{\notenumber}{7*#1}%
+  \pgfmathtruncatemacro{\pc}{mod(\notenumber,12)}%
+  \def\note{\getNote{\notenumber}}%
+  \def\saxnote{\getNoteAlt[-2]{\notenumber}}%
+  \node[font=\bfseries\large, inner sep=-1.8pt] (main) at (#2:#3) {\note};
+  \node[font=\scriptsize, anchor=north, text=white!30!black] at (main.south) {\saxnote};
+  % place compact key signature slightly further out and centered
+  \node[anchor=center] at (#2:{#3+\keySigDistance}) {\drawKeySignature{\pc}};
+}
+
+\newcommand{\innerSectorNote}[3]{%
+  % #1 index, #2 midangle, #3 midradius
+  \pgfmathtruncatemacro{\notenumber}{7*#1}%
+  \def\note{\getNote{\notenumber}}%
+  \node[font=\bfseries\large, inner sep=-1.8pt] at (#2:#3) {\note};
 }
 
 \begin{document}
 \begin{tikzpicture}
-\drawCircularSectors{1.4}{2.4}
+% draw an inner ring and an outer ring using the same sector content macro (explicit divisions, now pass width){1.4}{2.4}
+\drawCircularSectors{1.4}{1.0}{12}{\sectorNodeDefault}
+%\drawCircularSectors{3.4}{1.0}{24}{\innerSectorNote}
 \end{tikzpicture}
 \end{document}
