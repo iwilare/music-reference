@@ -3,6 +3,8 @@
 \usepackage{xparse}
 \usetikzlibrary{calc}
 
+
+
 % Define note names
 \newcommand{\noteName}[1]{%
   \ifcase#1
@@ -38,6 +40,40 @@
   \else ?%
   \fi
 }
+\newcommand{\noteNameMinor}[1]{%
+  \ifcase#1
+      C%
+  \or C$\sharp$%
+  \or D%
+  \or D$\sharp$%
+  \or E%
+  \or F%
+  \or F$\sharp$%
+  \or G%
+  \or G$\sharp$%
+  \or A%
+  \or B$\flat$%
+  \or B%
+  \else ?%
+  \fi
+}
+\newcommand{\sheetdistance}[1]{%
+  \ifcase#1
+      0.6 % -            C
+  \or 0.6 % --
+  \or 0.7
+  \or 0.8 % --------------
+  \or 0.7
+  \or 0.6 % --
+  \or 0.6 % -            F#
+  \or 0.6 % --
+  \or 0.7
+  \or 0.8 % --------------
+  \or 0.7
+  \or 0.6 % --
+  \else ?%
+  \fi
+}
 
 \newcommand{\convert}[1]{%
   \ifcase#1
@@ -65,6 +101,10 @@
   \pgfmathtruncatemacro{\idx}{mod(#2+#1+12,12)}%
   \noteNameAlt{\idx}%
 }
+\NewDocumentCommand{\getNoteAltAlt}{ O{0} m }{%
+  \pgfmathtruncatemacro{\idx}{mod(#2+#1+12,12)}%
+  \noteNameMinor{\idx}%
+}
 
 \def\col{blue!30}
 
@@ -78,6 +118,9 @@
 \newcommand{\sharpPos}{4.05,2.5,4.8,3,1.5,3.5,2}
 \newcommand{\flatPos}{2,3.5,1.5,3,1,2.5,4}
 
+\def\staffwidth{1.75cm}
+\def\staffStep{0.219cm}
+
 % Macro to draw staff and key signature (compact, with vertical lines)
 \newcommand{\drawKeySignature}[1]{%
     % #1 is a pitch-class index (0..11). Use \convert to get number of accidentals.
@@ -87,13 +130,11 @@
       \begin{tikzpicture}[baseline=(staff.base),scale=0.50,every node/.style={inner sep=0pt,outer sep=0pt}]
         \coordinate (staff) at (0,0);
         % compact staff parameters
-        \def\staffwidth{1.75}
-        \def\ystep{0.219}
         % short staff lines
-        \foreach \y in {0,...,4} {\draw (0,\y*\ystep) -- (\staffwidth,\y*\ystep);}
+        \foreach \y in {0,...,4} {\draw (0,\y*\staffStep) -- (\staffwidth,\y*\staffStep);}
         % thin vertical bar lines at left and right to visually bound the staff
-        \draw[line width=0.4pt] (0,-0.02) -- (0,4*\ystep+0.02);
-        \draw[line width=0.4pt] (\staffwidth,-0.02) -- (\staffwidth,4*\ystep+0.02);
+        \draw[line width=0.4pt] (0,-0.02) -- (0,4*\staffStep+0.02);
+        \draw[line width=0.4pt] (\staffwidth,-0.02) -- (\staffwidth,4*\staffStep+0.02);
         % sharps
         \ifnum\acc>0
           \pgfmathtruncatemacro{\countacc}{\acc}
@@ -101,7 +142,7 @@
             \ifnum\i>\countacc\relax\else
               % compute x position so accidentals form a compact cluster
               \pgfmathsetmacro{\xpos}{0.25*(\i-1)+0.23}%
-              \node at (\xpos,\pos*\ystep+0.02) {\small$\sharp$};
+              \node at (\xpos,\pos*\staffStep+0.02) {\small$\sharp$};
             \fi
           }
         \fi
@@ -111,7 +152,7 @@
           \foreach [count=\i] \pos in \flatPos {%
             \ifnum\i>\countacc\relax\else
               \pgfmathsetmacro{\xpos}{0.25*(\i-1)+0.23}%
-              \node at (\xpos,\pos*\ystep+0.09) {\small$\flat$};
+              \node at (\xpos,\pos*\staffStep+0.09) {\small$\flat$};
             \fi
           }
         \fi
@@ -130,7 +171,7 @@
   \foreach \j in {0,...,\N} {%
       \pgfmathsetmacro{\startangle}{90-\j*\anglestep+\offset}%
       \pgfmathsetmacro{\endangle}{\startangle-\anglestep}%
-      \pgfmathsetmacro{\midangle}{\startangle-\anglestep/2}%
+      \pgfmathsetmacro{\angle}{\startangle-\anglestep/2}%
       \pgfmathsetmacro{\midradius}{\innerradius+\widthcircle/2}%
 
       % Draw sector
@@ -143,8 +184,8 @@
       \draw[thick] (\endangle:\innerradius) -- (\endangle:\outerradius);
 
       % Call the user-supplied per-sector content macro
-      % Macro signature: #4{<sector-index>}{<midangle>}{<midradius>}
-      #4{\j}{\midangle}{\midradius}%
+      % Macro signature: #4{<sector-index>}{<angle>}{<midradius>}
+      #4{\j}{\angle}{\midradius}{\outerradius}%
   }
 
   % Draw circles
@@ -153,8 +194,8 @@
 }
 
 % Default per-sector content: compute note and sax label locally from the sector index
-\newcommand{\sectorNodeDefault}[3]{%
-  % #1 index, #2 midangle, #3 midradius
+\newcommand{\sectorNodeDefault}[4]{%
+  % #1 index, #2 angle, #3 midradius, #4 outerradius
   % compute pitch-class from index: 7*j mod 12
   \pgfmathtruncatemacro{\notenumber}{7*#1}%
   \pgfmathtruncatemacro{\pc}{mod(\notenumber,12)}%
@@ -163,20 +204,27 @@
   \node[font=\bfseries\large, inner sep=-1.8pt] (main) at (#2:#3) {\note};
   \node[font=\scriptsize, anchor=north, text=white!30!black] at (main.south) {\saxnote};
   % place compact key signature slightly further out and centered
-  \node[anchor=center] at (#2:{#3+\keySigDistance}) {\drawKeySignature{\pc}};
+  \node[anchor=base, yshift={-1*\staffStep}] at (#2:{\sheetdistance{\j}+#4}) {\drawKeySignature{\pc}};
 }
 
-\newcommand{\innerSectorNote}[3]{%
-  % #1 index, #2 midangle, #3 midradius
+\newcommand{\innerSectorNote}[4]{%
+  % #1 index, #2 angle, #3 midradius
   \pgfmathtruncatemacro{\notenumber}{7*#1}%
   \def\note{\getNote{\notenumber}}%
   \node[font=\bfseries\large, inner sep=-1.8pt] at (#2:#3) {\note};
+}
+\newcommand{\innerSectorNoteMinor}[4]{%
+  % #1 index, #2 angle, #3 midradius
+  \pgfmathtruncatemacro{\notenumber}{7*#1 + 9}%
+  \def\note{\getNoteAltAlt{\notenumber}}%
+  \node[font=\bfseries\large, inner sep=-1.8pt] at (#2:#3) {\small \note m};
 }
 
 \begin{document}
 \begin{tikzpicture}
 % draw an inner ring and an outer ring using the same sector content macro (explicit divisions, now pass width){1.4}{2.4}
-\drawCircularSectors{1.4}{1.0}{12}{\sectorNodeDefault}
+\drawCircularSectors{2.4}{1.0}{12}{\sectorNodeDefault}
+\drawCircularSectors{1.4}{1.0}{12}{\innerSectorNoteMinor}
 %\drawCircularSectors{3.4}{1.0}{24}{\innerSectorNote}
 \end{tikzpicture}
 \end{document}
