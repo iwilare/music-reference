@@ -1,17 +1,71 @@
 \documentclass[tikz,border=5pt]{standalone}
 \usepackage{tikz}
 \usepackage{xparse}
+\usepackage{musicography}
+
 \usetikzlibrary{calc}
 
 \newif\ifrotateKeySignatures
-\rotateKeySignaturestrue
+\newif\ifsaxKeys
 
-\usepackage{musicography}
 
-% \renewcommand{\flat}{\musFlat}
-% \renewcommand{\sharp}{\musSharp}
+
+\newcommand{\drawSimpleSaxDiagram}[0]{%
+  %\draw[help lines,xstep=.1,ystep=.1] (0,0) grid (1,1);
+  %\foreach \x in {0,1,...,9} { \node [anchor=north] at (\x/10,0) {0.\x}; }
+  %\foreach \y in {0,1,...,9} { \node [anchor=east] at (0,\y/10) {0.\y}; }
+
+  %Código para dibujar el Saxophone
+  \begin{tikzpicture}
+  \draw [fill=blue] (0.67,1.0) ellipse (0.04cm and 0.09cm);
+  \draw [fill=green] (0.685,0.95) ellipse (0.03cm and 0.13cm);
+  \draw [fill=green] (0.69,0.90) ellipse (0.03cm and 0.13cm);
+  \draw [fill=green] (0.68,0.85) ellipse (0.03cm and 0.13cm);
+  \draw [fill=blue] (0.67,0.9) circle[radius=0.08cm];
+  \draw [fill=purple] (0.65,0.9) circle[radius=0.08cm];
+  \draw [fill=blue] (0.67,0.8) circle[radius=0.06cm];
+  \draw [fill=gray] (0.67,0.7) circle[radius=0.08cm];
+  \draw [fill=yellow] (0.67,0.6) circle[radius=0.08cm];
+  \draw [fill=yellow] (0.69,0.6) ellipse (0.1cm and 0.03cm);
+  \draw [fill=yellow,rounded corners=0.025cm] (0.683,0.54) rectangle (0.688,0.58);
+  \draw [fill=yellow,rounded corners=0.025cm] (0.690,0.54) rectangle (0.695,0.58);
+  \draw [fill=yellow] (0.69,0.52) ellipse (0.1cm and 0.03cm);
+  \draw[] (0.635,0.6) -- ++(0.07,-0.2);
+
+  \draw [fill=blue] (0.67,0.4) circle[radius=0.08cm];
+  \draw [fill=gray] (0.67,0.3) circle[radius=0.08cm];
+  \draw [fill=yellow] (0.67,0.2) circle[radius=0.08cm];
+  \draw [fill=gray] (0.65,0.2) ellipse (0.1cm and 0.05cm);
+  \draw [fill=green,rounded corners=0.025cm] (0.64,0.39) rectangle (0.645,0.44);
+  \draw [fill=green,rounded corners=0.025cm] (0.64,0.32) rectangle (0.645,0.37);
+  \draw [fill=green,rounded corners=0.025cm] (0.64,0.25) rectangle (0.645,0.3);
+  \draw [fill=gray,rounded corners=0.025cm] (0.655,0.25) rectangle (0.66,0.35);
+  \draw [fill=yellow,rounded corners=0.05cm] (0.64,0.15) rectangle (0.66,0.1);
+  \draw [fill=yellow,rounded corners=0.05cm] (0.64,0.08) rectangle (0.66,0.03);
+  \end{tikzpicture}
+}
+
+
+
 
 % Define note names
+\newcommand{\simpleSaxDiagram}[1]{%
+  \ifcase#1
+      \drawSimpleSaxDiagram %C%
+  \or \drawSimpleSaxDiagram %D$\flat$%
+  \or \drawSimpleSaxDiagram %D%
+  \or \drawSimpleSaxDiagram %E$\flat$%
+  \or \drawSimpleSaxDiagram %E%
+  \or \drawSimpleSaxDiagram %F%
+  \or \drawSimpleSaxDiagram %F$\sharp$%
+  \or \drawSimpleSaxDiagram %G%
+  \or \drawSimpleSaxDiagram %A$\flat$%
+  \or \drawSimpleSaxDiagram %A%
+  \or \drawSimpleSaxDiagram %B$\flat$%
+  \or \drawSimpleSaxDiagram %B%
+  \else ?%
+  \fi
+}
 \newcommand{\noteName}[1]{%
   \ifcase#1
       C%
@@ -63,7 +117,7 @@
   \else ?%
   \fi
 }
-\def\rotatedsheetdistance{0.4}
+
 \newcommand{\sheetdistance}[1]{%
   \ifcase#1
       0.6 % -            C
@@ -122,8 +176,8 @@
 \newcommand{\sharpPos}{4,2.5,4.5,3,1.5,3.5,2}
 \newcommand{\flatPos}{2,3.5,1.5,3,1,2.5,4}
 
-\def\staffwidth{1.75cm}
-\def\staffStep{0.219cm}
+\def\staffWidth{49.8pt}
+\def\staffStep{6.23pt}
 
 % Macro to draw staff and key signature (compact, with vertical lines)
 \newcommand{\drawKeySignature}[1]{%
@@ -135,18 +189,19 @@
         \coordinate (staff) at (0,0);
         % compact staff parameters
         % short staff lines
-        \foreach \y in {0,...,4} {\draw (0,\y*\staffStep) -- (\staffwidth,\y*\staffStep);}
+        \foreach \y in {0,...,4}
+        {\draw[line width=0.4pt] (0,\y*\staffStep) -- (\staffWidth,\y*\staffStep);}
         % thin vertical bar lines at left and right to visually bound the staff
-        \draw[line width=0.4pt] (0,-0.02) -- (0,4*\staffStep+0.02);
-        \draw[line width=0.4pt] (\staffwidth,-0.02) -- (\staffwidth,4*\staffStep+0.02);
+        \draw[line width=0.4pt] (0,0) -- (0,4*\staffStep) --
+                                (\staffWidth,4*\staffStep) -- (\staffWidth,0) -- cycle;
         % sharps
         \ifnum\acc>0
           \pgfmathtruncatemacro{\countacc}{\acc}
           \foreach [count=\i] \pos in \sharpPos {%
             \ifnum\i>\countacc\relax\else
               % compute x position so accidentals form a compact cluster
-              \pgfmathsetmacro{\xpos}{0.25*(\i-1)+0.23}%
-              \node at (\xpos,\pos*\staffStep-0.148cm) {$\musSharp$};
+              \pgfmathsetmacro{\xpos}{0.25pt*(\i-1)+0.23pt}%
+              \node at (\xpos,\pos*\staffStep-4.214pt) {$\musSharp$};
             \fi
           }
         \fi
@@ -155,8 +210,8 @@
           \pgfmathtruncatemacro{\countacc}{abs(\acc)}
           \foreach [count=\i] \pos in \flatPos {%
             \ifnum\i>\countacc\relax\else
-              \pgfmathsetmacro{\xpos}{0.25*(\i-1)+0.23}%
-              \node at (\xpos,\pos*\staffStep-0.14cm) {$\musFlat$};
+              \pgfmathsetmacro{\xpos}{0.25pt*(\i-1)+0.23pt}%
+              \node at (\xpos,\pos*\staffStep-3.984pt) {$\musFlat$};
             \fi
           }
         \fi
@@ -178,17 +233,13 @@
       \pgfmathsetmacro{\angle}{\startangle-\anglestep/2}%
       \pgfmathsetmacro{\midradius}{\innerradius+\widthcircle/2}%
 
-      % Draw sector
       \fill[\col]
           (\startangle:\innerradius) arc (\startangle:\endangle:\innerradius) --
           (\endangle:\outerradius) arc (\endangle:\startangle:\outerradius) -- cycle;
 
-      % Sector lines
       \draw[thick] (\startangle:\innerradius) -- (\startangle:\outerradius);
       \draw[thick] (\endangle:\innerradius) -- (\endangle:\outerradius);
 
-      % Call the user-supplied per-sector content macro
-      % Macro signature: #4{<sector-index>}{<angle>}{<midradius>}
       #4{\j}{\angle}{\midradius}{\outerradius}%
   }
 
@@ -197,7 +248,8 @@
   \draw[thick] (0,0) circle (\innerradius);
 }
 
-% Default per-sector content: compute note and sax label locally from the sector index
+\def\saxnotesdistance{0pt}
+
 \newcommand{\sectorNodeDefault}[4]{%
   % #1 index, #2 angle, #3 midradius, #4 outerradius
   \pgfmathtruncatemacro{\pc}{mod(7*#1,12)}%
@@ -205,17 +257,21 @@
   \def\saxnote{\getNoteAlt[-2]{\pc}}%
 
   \ifrotateKeySignatures
-    \node[font=\bfseries\large, inner sep=-1.8pt, rotate=#2-90] (main) at (#2:#3+0.05) {\note};
-    \node[font=\scriptsize, anchor=north, rotate=#2-90, text=white!30!black] at (main.south) {\saxnote};
+    \node[font=\bfseries\large, inner sep=-1.8pt, rotate=#2-\counterrotation] (main) at (#2:#3+\labeloffset) {\note};
+    \node[font=\scriptsize, anchor=north, rotate=#2-\counterrotation, text=white!30!black] at (main.south) {\saxnote};
   \else
     \node[font=\bfseries\large, inner sep=-1.8pt] (main) at (#2:#3) {\note};
     \node[font=\scriptsize, anchor=north, text=white!30!black] at (main.south) {\saxnote};
   \fi
 
   \ifrotateKeySignatures
-    \node[anchor=base, rotate=#2-90, shift={(0,-\staffStep)}] at (#2:{\rotatedsheetdistance+#4}) {\drawKeySignature{\pc}};
+    \node[anchor=base, rotate=#2-\counterrotation, shift={(0,-\staffStep)}] at (#2:{\rotatedsheetdistance+#4}) {\drawKeySignature{\pc}};
   \else
     \node[anchor=base, yshift={-1*\staffStep}] at (#2:{\sheetdistance{\j}+#4}) {\drawKeySignature{\pc}};
+  \fi
+
+  \ifsaxKeys
+    \node[anchor=base, rotate=#2-\counterrotation, shift={(0,-\staffStep)}] at (#2:{\rotatedsheetdistance+#4+\saxnotesdistance}) {\simpleSaxDiagram{\pc}};
   \fi
 }
 
@@ -224,15 +280,39 @@
   \def\note{\getNoteAltAlt{\pc}}%
 
   \ifrotateKeySignatures
-    \node[font=\bfseries\large, inner sep=-1.8pt, rotate=#2-90] at (#2:#3) {\small \note m};
+    \node[font=\bfseries\large, inner sep=-1.8pt, rotate=#2-\counterrotation] at (#2:#3) {\small \note m};
   \else
     \node[font=\bfseries\large, inner sep=-1.8pt] at (#2:#3) {\small \note m};
   \fi
 }
 
 \begin{document}
+\rotateKeySignaturestrue
+\saxKeysfalse
+\def\rotatedsheetdistance{0.4}
+\def\counterrotation{90}
+\def\labeloffset{0.055}
 \begin{tikzpicture}
-\drawCircularSectors{2.1}{1.0}{12}{\sectorNodeDefault}
-\drawCircularSectors{1.5}{0.6}{12}{\innerSectorNoteMinor}
+\drawCircularSectors{2.1pt}{1.0pt}{12}{\sectorNodeDefault}
+\drawCircularSectors{1.5pt}{0.6pt}{12}{\innerSectorNoteMinor}
 \end{tikzpicture}
+\newpage
+\rotateKeySignaturestrue
+\saxKeystrue
+\def\rotatedsheetdistance{0.6}
+\def\counterrotation{0}
+\def\labeloffset{0}
+\begin{tikzpicture}
+\drawCircularSectors{2.1pt}{1.0pt}{12}{\sectorNodeDefault}
+\drawCircularSectors{1.2pt}{0.9pt}{12}{\innerSectorNoteMinor}
+\end{tikzpicture}
+\newpage
+\begin{tikzpicture}
+\rotateKeySignaturesfalse
+\saxKeysfalse
+\def\labeloffset{0}
+\drawCircularSectors{2.1pt}{1.0pt}{12}{\sectorNodeDefault}
+\drawCircularSectors{1.3pt}{0.8pt}{12}{\innerSectorNoteMinor}
+\end{tikzpicture}
+
 \end{document}
