@@ -63,7 +63,7 @@
   \else ?%
   \fi
 }
-\def\rotatedsheetdistance{0.6}
+\def\rotatedsheetdistance{0.4}
 \newcommand{\sheetdistance}[1]{%
   \ifcase#1
       0.6 % -            C
@@ -205,15 +205,15 @@
   \def\saxnote{\getNoteAlt[-2]{\pc}}%
 
   \ifrotateKeySignatures
-    \node[font=\bfseries\large, inner sep=-1.8pt, rotate=#2] (main) at (#2:#3) {\note};
-    \node[font=\scriptsize, anchor=north, rotate=#2, text=white!30!black] at (main.south) {\saxnote};
+    \node[font=\bfseries\large, inner sep=-1.8pt, rotate=#2-90] (main) at (#2:#3+0.05) {\note};
+    \node[font=\scriptsize, anchor=north, rotate=#2-90, text=white!30!black] at (main.south) {\saxnote};
   \else
     \node[font=\bfseries\large, inner sep=-1.8pt] (main) at (#2:#3) {\note};
     \node[font=\scriptsize, anchor=north, text=white!30!black] at (main.south) {\saxnote};
   \fi
 
   \ifrotateKeySignatures
-    \node[anchor=base, rotate=#2, shift={(0,-\staffStep)}] at (#2:{\rotatedsheetdistance+#4}) {\drawKeySignature{\pc}};
+    \node[anchor=base, rotate=#2-90, shift={(0,-\staffStep)}] at (#2:{\rotatedsheetdistance+#4}) {\drawKeySignature{\pc}};
   \else
     \node[anchor=base, yshift={-1*\staffStep}] at (#2:{\sheetdistance{\j}+#4}) {\drawKeySignature{\pc}};
   \fi
@@ -224,7 +224,7 @@
   \def\note{\getNoteAltAlt{\pc}}%
 
   \ifrotateKeySignatures
-    \node[font=\bfseries\large, inner sep=-1.8pt, rotate=#2] at (#2:#3) {\small \note m};
+    \node[font=\bfseries\large, inner sep=-1.8pt, rotate=#2-90] at (#2:#3) {\small \note m};
   \else
     \node[font=\bfseries\large, inner sep=-1.8pt] at (#2:#3) {\small \note m};
   \fi
@@ -232,7 +232,7 @@
 
 \begin{document}
 \begin{tikzpicture}
-\drawCircularSectors{2.4}{1.0}{12}{\sectorNodeDefault}
-\drawCircularSectors{1.4}{1.0}{12}{\innerSectorNoteMinor}
+\drawCircularSectors{2.1}{1.0}{12}{\sectorNodeDefault}
+\drawCircularSectors{1.5}{0.6}{12}{\innerSectorNoteMinor}
 \end{tikzpicture}
 \end{document}
