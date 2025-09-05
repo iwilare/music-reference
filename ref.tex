@@ -3,7 +3,10 @@
 \usepackage{xparse}
 \usetikzlibrary{calc}
 
+\usepackage{musicography}
 
+% \renewcommand{\flat}{\musFlat}
+% \renewcommand{\sharp}{\musSharp}
 
 % Define note names
 \newcommand{\noteName}[1]{%
@@ -114,8 +117,8 @@
 % Define positions of sharps and flats in treble clef (relative to bottom staff line index 0)
 % For y positions we use: 0=line1(E), 0.5=space1(F), 1=line2(G), 1.5=space2(A), 2=line3(B), 2.5=space3(C), 3=line4(D), 3.5=space4(E), 4=line5(F)
 % Sharp order: F, C, G, D, A, E, B  -> y {4,2.5,4.8,3,1.5,3.5,2}
-% Flat order:  B, E, A, D, G, C, F  -> y {2,3.5,1.5,3,1,2.5,4}
-\newcommand{\sharpPos}{4.05,2.5,4.8,3,1.5,3.5,2}
+% flat order:  B, E, A, D, G, C, F  -> y {2,3.5,1.5,3,1,2.5,4}
+\newcommand{\sharpPos}{4,2.5,4.5,3,1.5,3.5,2}
 \newcommand{\flatPos}{2,3.5,1.5,3,1,2.5,4}
 
 \def\staffwidth{1.75cm}
@@ -142,7 +145,7 @@
             \ifnum\i>\countacc\relax\else
               % compute x position so accidentals form a compact cluster
               \pgfmathsetmacro{\xpos}{0.25*(\i-1)+0.23}%
-              \node at (\xpos,\pos*\staffStep+0.02) {\small$\sharp$};
+              \node at (\xpos,\pos*\staffStep-0.148cm) {$\musSharp$};
             \fi
           }
         \fi
@@ -152,7 +155,7 @@
           \foreach [count=\i] \pos in \flatPos {%
             \ifnum\i>\countacc\relax\else
               \pgfmathsetmacro{\xpos}{0.25*(\i-1)+0.23}%
-              \node at (\xpos,\pos*\staffStep+0.09) {\small$\flat$};
+              \node at (\xpos,\pos*\staffStep-0.14cm) {$\musFlat$};
             \fi
           }
         \fi
