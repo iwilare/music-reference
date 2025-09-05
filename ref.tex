@@ -3,6 +3,9 @@
 \usepackage{xparse}
 \usetikzlibrary{calc}
 
+\newif\ifrotateKeySignatures
+\rotateKeySignaturestrue
+
 \usepackage{musicography}
 
 % \renewcommand{\flat}{\musFlat}
@@ -60,6 +63,7 @@
   \else ?%
   \fi
 }
+\def\rotatedsheetdistance{0.6}
 \newcommand{\sheetdistance}[1]{%
   \ifcase#1
       0.6 % -            C
@@ -110,9 +114,6 @@
 }
 
 \def\col{blue!30}
-
-% distance of small key signatures from outer circle
-\def\keySigDistance{1.2}
 
 % Define positions of sharps and flats in treble clef (relative to bottom staff line index 0)
 % For y positions we use: 0=line1(E), 0.5=space1(F), 1=line2(G), 1.5=space2(A), 2=line3(B), 2.5=space3(C), 3=line4(D), 3.5=space4(E), 4=line5(F)
@@ -199,35 +200,39 @@
 % Default per-sector content: compute note and sax label locally from the sector index
 \newcommand{\sectorNodeDefault}[4]{%
   % #1 index, #2 angle, #3 midradius, #4 outerradius
-  % compute pitch-class from index: 7*j mod 12
-  \pgfmathtruncatemacro{\notenumber}{7*#1}%
-  \pgfmathtruncatemacro{\pc}{mod(\notenumber,12)}%
-  \def\note{\getNote{\notenumber}}%
-  \def\saxnote{\getNoteAlt[-2]{\notenumber}}%
-  \node[font=\bfseries\large, inner sep=-1.8pt] (main) at (#2:#3) {\note};
-  \node[font=\scriptsize, anchor=north, text=white!30!black] at (main.south) {\saxnote};
-  % place compact key signature slightly further out and centered
-  \node[anchor=base, yshift={-1*\staffStep}] at (#2:{\sheetdistance{\j}+#4}) {\drawKeySignature{\pc}};
+  \pgfmathtruncatemacro{\pc}{mod(7*#1,12)}%
+  \def\note{\getNote{\pc}}%
+  \def\saxnote{\getNoteAlt[-2]{\pc}}%
+
+  \ifrotateKeySignatures
+    \node[font=\bfseries\large, inner sep=-1.8pt, rotate=#2] (main) at (#2:#3) {\note};
+    \node[font=\scriptsize, anchor=north, rotate=#2, text=white!30!black] at (main.south) {\saxnote};
+  \else
+    \node[font=\bfseries\large, inner sep=-1.8pt] (main) at (#2:#3) {\note};
+    \node[font=\scriptsize, anchor=north, text=white!30!black] at (main.south) {\saxnote};
+  \fi
+
+  \ifrotateKeySignatures
+    \node[anchor=base, rotate=#2, shift={(0,-\staffStep)}] at (#2:{\rotatedsheetdistance+#4}) {\drawKeySignature{\pc}};
+  \else
+    \node[anchor=base, yshift={-1*\staffStep}] at (#2:{\sheetdistance{\j}+#4}) {\drawKeySignature{\pc}};
+  \fi
 }
 
-\newcommand{\innerSectorNote}[4]{%
-  % #1 index, #2 angle, #3 midradius
-  \pgfmathtruncatemacro{\notenumber}{7*#1}%
-  \def\note{\getNote{\notenumber}}%
-  \node[font=\bfseries\large, inner sep=-1.8pt] at (#2:#3) {\note};
-}
 \newcommand{\innerSectorNoteMinor}[4]{%
-  % #1 index, #2 angle, #3 midradius
-  \pgfmathtruncatemacro{\notenumber}{7*#1 + 9}%
-  \def\note{\getNoteAltAlt{\notenumber}}%
-  \node[font=\bfseries\large, inner sep=-1.8pt] at (#2:#3) {\small \note m};
+  \pgfmathtruncatemacro{\pc}{mod(7*#1 + 9,12)}%
+  \def\note{\getNoteAltAlt{\pc}}%
+
+  \ifrotateKeySignatures
+    \node[font=\bfseries\large, inner sep=-1.8pt, rotate=#2] at (#2:#3) {\small \note m};
+  \else
+    \node[font=\bfseries\large, inner sep=-1.8pt] at (#2:#3) {\small \note m};
+  \fi
 }
 
 \begin{document}
 \begin{tikzpicture}
-% draw an inner ring and an outer ring using the same sector content macro (explicit divisions, now pass width){1.4}{2.4}
 \drawCircularSectors{2.4}{1.0}{12}{\sectorNodeDefault}
 \drawCircularSectors{1.4}{1.0}{12}{\innerSectorNoteMinor}
-%\drawCircularSectors{3.4}{1.0}{24}{\innerSectorNote}
 \end{tikzpicture}
 \end{document}
