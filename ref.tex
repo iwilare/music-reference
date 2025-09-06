@@ -11,38 +11,63 @@
 
 
 \newcommand{\drawSimpleSaxDiagram}[0]{%
-  %\draw[help lines,xstep=.1,ystep=.1] (0,0) grid (1,1);
-  %\foreach \x in {0,1,...,9} { \node [anchor=north] at (\x/10,0) {0.\x}; }
-  %\foreach \y in {0,1,...,9} { \node [anchor=east] at (0,\y/10) {0.\y}; }
+    \begin{tikzpicture}[x=12cm,y=1.8cm]
+      % Palm keys (green)
+      \coordinate (palmKeys) at (0.6825,0.84);
+      \draw [fill=green] (palmKeys) ellipse (0.03cm and 0.13cm);
+      \draw [fill=green] ($(palmKeys)+(0.005,0.10)$) ellipse (0.03cm and 0.13cm);
+      \draw [fill=green] ($(palmKeys)+(0.01,0.05)$) ellipse (0.03cm and 0.13cm);
 
-  %Código para dibujar el Saxophone
-  \begin{tikzpicture}
-  \draw [fill=blue] (0.67,1.0) ellipse (0.04cm and 0.09cm);
-  \draw [fill=green] (0.685,0.95) ellipse (0.03cm and 0.13cm);
-  \draw [fill=green] (0.69,0.90) ellipse (0.03cm and 0.13cm);
-  \draw [fill=green] (0.68,0.85) ellipse (0.03cm and 0.13cm);
-  \draw [fill=blue] (0.67,0.9) circle[radius=0.08cm];
-  \draw [fill=purple] (0.65,0.9) circle[radius=0.08cm];
-  \draw [fill=blue] (0.67,0.8) circle[radius=0.06cm];
-  \draw [fill=gray] (0.67,0.7) circle[radius=0.08cm];
-  \draw [fill=yellow] (0.67,0.6) circle[radius=0.08cm];
-  \draw [fill=yellow] (0.69,0.6) ellipse (0.1cm and 0.03cm);
-  \draw [fill=yellow,rounded corners=0.025cm] (0.683,0.54) rectangle (0.688,0.58);
-  \draw [fill=yellow,rounded corners=0.025cm] (0.690,0.54) rectangle (0.695,0.58);
-  \draw [fill=yellow] (0.69,0.52) ellipse (0.1cm and 0.03cm);
-  \draw[] (0.635,0.6) -- ++(0.07,-0.2);
+      % Main finger keys (blue)
+      \coordinate (mainKeys) at (0.67,0.995);
+      \draw [fill=blue] (mainKeys) ellipse (0.04cm and 0.09cm);
+      \draw [fill=blue] ($(mainKeys)+(0,-0.105)$) circle[radius=0.08cm];
+      \draw [fill=blue] ($(mainKeys)+(0.003,-0.19)$) circle[radius=0.06cm];
+      \draw [fill=blue] ($(mainKeys)+(0,-0.305)$) circle[radius=0.08cm];
+      \draw [fill=blue] ($(mainKeys)+(0,-0.405)$) circle[radius=0.08cm];
 
-  \draw [fill=blue] (0.67,0.4) circle[radius=0.08cm];
-  \draw [fill=gray] (0.67,0.3) circle[radius=0.08cm];
-  \draw [fill=yellow] (0.67,0.2) circle[radius=0.08cm];
-  \draw [fill=gray] (0.65,0.2) ellipse (0.1cm and 0.05cm);
-  \draw [fill=green,rounded corners=0.025cm] (0.64,0.39) rectangle (0.645,0.44);
-  \draw [fill=green,rounded corners=0.025cm] (0.64,0.32) rectangle (0.645,0.37);
-  \draw [fill=green,rounded corners=0.025cm] (0.64,0.25) rectangle (0.645,0.3);
-  \draw [fill=gray,rounded corners=0.025cm] (0.655,0.25) rectangle (0.66,0.35);
-  \draw [fill=yellow,rounded corners=0.05cm] (0.64,0.15) rectangle (0.66,0.1);
-  \draw [fill=yellow,rounded corners=0.05cm] (0.64,0.08) rectangle (0.66,0.03);
-  \end{tikzpicture}
+      % Side keys (yellow)
+      \coordinate (sideKeys) at (0.69,0.59);
+      \draw [fill=yellow] (sideKeys) ellipse (0.1cm and 0.03cm);
+      \draw [fill=yellow,rounded corners=0.025cm] ($(sideKeys)+(-0.007, -0.06)$) rectangle ($(sideKeys)+(-0.002, -0.02)$);
+      \draw [fill=yellow,rounded corners=0.025cm] ($(sideKeys)+(0.000, -0.06)$) rectangle ($(sideKeys)+(0.005, -0.02)$);
+      \draw [fill=yellow] ($(sideKeys)+(0, -0.08)$) ellipse (0.1cm and 0.03cm);
+
+      % Thumb hook (single line, not grouped)
+      \draw[] (0.635,0.59) -- ++(0.07,-0.2);
+
+      % Auxiliary keys (green rectangles)
+      \coordinate (auxKeys) at (0.6425,0.38);
+      \draw [fill=green,rounded corners=0.025cm] (auxKeys) rectangle ($(auxKeys)+(0.005,0.05)$);
+      \draw [fill=green,rounded corners=0.025cm] ($(auxKeys)+(0, -0.07)$) rectangle ($(auxKeys)+(0.005, -0.02)$);
+      \draw [fill=green,rounded corners=0.025cm] ($(auxKeys)+(0, -0.14)$) rectangle ($(auxKeys)+(0.005, -0.09)$);
+
+      % Lower stack keys (cyan circles)
+      \coordinate (lowerStackKeys) at (0.67,0.39);
+      \draw [fill=cyan] (lowerStackKeys) circle[radius=0.08cm];
+      \draw [fill=cyan] ($(lowerStackKeys)+(0, -0.10)$) circle[radius=0.08cm];
+      \draw [fill=cyan] ($(lowerStackKeys)+(0, -0.20)$) circle[radius=0.08cm];
+
+      % Low C/Eb cluster (gray)
+      \coordinate (lowClusterKeys) at (0.65,0.19);
+      \draw [fill=gray] (lowClusterKeys) ellipse (0.1cm and 0.05cm);
+      \draw [fill=gray,rounded corners=0.025cm] ($(lowClusterKeys)+(0.005,0.05)$) rectangle ($(lowClusterKeys)+(0.01,0.15)$);
+
+      % Pinky keys (red)
+      \coordinate (pinkyKeys) at (0.67,0.10);
+      % Left pinky key (semi-circle)
+      \draw [fill=red]
+        ($(pinkyKeys)$)
+          -- ($(pinkyKeys)-(-0.025,0)$)
+            arc (0:180:0.025)
+          -- ($(pinkyKeys)$);
+      % Right pinky key (semi-circle, shifted down)
+      % \draw [fill=red]
+      %   ($(pinkyKeys)-(0.01,-0.025)-(0,0.06)$)
+      %     arc[start angle=180, end angle=360, radius=0.01cm] --
+      %   ($(pinkyKeys)+(0.01,-0.025)-(0,0.06)$)
+      %     arc[start angle=0, end angle=180, radius=0.01cm] -- cycle;
+    \end{tikzpicture}
 }
 
 
@@ -51,8 +76,6 @@
 % Define note names
 \newcommand{\simpleSaxDiagram}[1]{%
   \ifcase#1
-      \drawSimpleSaxDiagram %C%
-  \or \drawSimpleSaxDiagram %D$\flat$%
   \or \drawSimpleSaxDiagram %D%
   \or \drawSimpleSaxDiagram %E$\flat$%
   \or \drawSimpleSaxDiagram %E%
@@ -248,7 +271,7 @@
   \draw[thick] (0,0) circle (\innerradius);
 }
 
-\def\saxnotesdistance{0pt}
+\def\saxnotesdistance{0.15}
 
 \newcommand{\sectorNodeDefault}[4]{%
   % #1 index, #2 angle, #3 midradius, #4 outerradius
@@ -271,7 +294,7 @@
   \fi
 
   \ifsaxKeys
-    \node[anchor=base, rotate=#2-\counterrotation, shift={(0,-\staffStep)}] at (#2:{\rotatedsheetdistance+#4+\saxnotesdistance}) {\simpleSaxDiagram{\pc}};
+    \node[anchor=base, rotate=#2-\counterrotation, shift={(0,-\staffStep)}] at (#2:{\saxnotesdistance+2*\rotatedsheetdistance+#4}) {\simpleSaxDiagram{\pc}};
   \fi
 }
 
