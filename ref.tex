@@ -11,62 +11,62 @@
 
 
 \newcommand{\drawSimpleSaxDiagram}[0]{%
-    \begin{tikzpicture}[x=12cm,y=1.8cm]
+    \begin{tikzpicture}
       % Palm keys (green)
-      \coordinate (palmKeys) at (0.6825,0.84);
-      \draw [fill=green] (palmKeys) ellipse (0.03cm and 0.13cm);
-      \draw [fill=green] ($(palmKeys)+(0.005,0.10)$) ellipse (0.03cm and 0.13cm);
-      \draw [fill=green] ($(palmKeys)+(0.01,0.05)$) ellipse (0.03cm and 0.13cm);
+      \coordinate (palmKeys) at (231.5pt,50pt);
+      \draw [fill=green] (palmKeys)    ellipse (0.03cm and 0.13cm)
+                        +(1.7pt,5.1pt) ellipse (0.03cm and 0.13cm)
+                        +(3.7pt,2.6pt) ellipse (0.03cm and 0.13cm);
 
       % Main finger keys (blue)
-      \coordinate (mainKeys) at (0.67,0.995);
-      \draw [fill=blue] (mainKeys) ellipse (0.04cm and 0.09cm);
-      \draw [fill=blue] ($(mainKeys)+(0,-0.105)$) circle[radius=0.08cm];
-      \draw [fill=blue] ($(mainKeys)+(0.003,-0.19)$) circle[radius=0.06cm];
-      \draw [fill=blue] ($(mainKeys)+(0,-0.305)$) circle[radius=0.08cm];
-      \draw [fill=blue] ($(mainKeys)+(0,-0.405)$) circle[radius=0.08cm];
+      \coordinate (mainKeys) at (227pt,50pt);
+      \draw [fill=blue] (mainKeys)       circle[radius=2.268pt]
+                          +(0,5.37pt)     ellipse  (0.04cm and 0.09cm)
+                          +(1.02pt,-4.34pt) circle[radius=1.70pt]
+                        ++(0,-9.18pt)       circle[radius=2.268pt]
+                        ++(0,-5.10pt)       circle[radius=2.268pt];
 
       % Side keys (yellow)
-      \coordinate (sideKeys) at (0.69,0.59);
-      \draw [fill=yellow] (sideKeys) ellipse (0.1cm and 0.03cm);
-      \draw [fill=yellow,rounded corners=0.025cm] ($(sideKeys)+(-0.007, -0.06)$) rectangle ($(sideKeys)+(-0.002, -0.02)$);
-      \draw [fill=yellow,rounded corners=0.025cm] ($(sideKeys)+(0.000, -0.06)$) rectangle ($(sideKeys)+(0.005, -0.02)$);
-      \draw [fill=yellow] ($(sideKeys)+(0, -0.08)$) ellipse (0.1cm and 0.03cm);
+      \coordinate (sideKeys) at (233pt,35pt);
+      \draw [fill=yellow] (sideKeys) ellipse (0.1cm and 0.03cm)
+            [rounded corners=0.025cm] ++(-2.7pt, -1.2pt) rectangle +(2.7pt, -1.7pt)
+            [rounded corners=0.025cm] ++(2.7pt, 0) rectangle +(2.7pt, -1.7pt)
+                  (sideKeys) +(0pt, -4.0pt) ellipse (0.1cm and 0.03cm);
 
       % Thumb hook (single line, not grouped)
-      \draw[] (0.635,0.59) -- ++(0.07,-0.2);
+      % \draw[] (18pt,30pt) -- ++(24pt,-10pt);
 
       % Auxiliary keys (green rectangles)
-      \coordinate (auxKeys) at (0.6425,0.38);
-      \draw [fill=green,rounded corners=0.025cm] (auxKeys) rectangle ($(auxKeys)+(0.005,0.05)$);
-      \draw [fill=green,rounded corners=0.025cm] ($(auxKeys)+(0, -0.07)$) rectangle ($(auxKeys)+(0.005, -0.02)$);
-      \draw [fill=green,rounded corners=0.025cm] ($(auxKeys)+(0, -0.14)$) rectangle ($(auxKeys)+(0.005, -0.09)$);
+      \coordinate (auxKeys) at (219pt,38pt);
+      \draw [fill=green,rounded corners=0.025cm]
+          (auxKeys)     rectangle +(1.7pt,-4.1pt)
+        ++(0pt, -4.5pt) rectangle +(1.7pt,-4.1pt)
+        ++(0pt, -4.5pt) rectangle +(1.7pt,-4.1pt);
 
-      % Lower stack keys (cyan circles)
-      \coordinate (lowerStackKeys) at (0.67,0.39);
-      \draw [fill=cyan] (lowerStackKeys) circle[radius=0.08cm];
-      \draw [fill=cyan] ($(lowerStackKeys)+(0, -0.10)$) circle[radius=0.08cm];
-      \draw [fill=cyan] ($(lowerStackKeys)+(0, -0.20)$) circle[radius=0.08cm];
+      % % Lower stack keys (cyan circles)
+      \coordinate (lowerStackKeys) at (227pt,28pt);
+      \draw [fill=cyan] (lowerStackKeys) circle[radius=2.268pt]
+                       ++(0pt, -5.10pt)  circle[radius=2.268pt]
+                       ++(0pt, -5.10pt)  circle[radius=2.268pt];
 
-      % Low C/Eb cluster (gray)
-      \coordinate (lowClusterKeys) at (0.65,0.19);
-      \draw [fill=gray] (lowClusterKeys) ellipse (0.1cm and 0.05cm);
-      \draw [fill=gray,rounded corners=0.025cm] ($(lowClusterKeys)+(0.005,0.05)$) rectangle ($(lowClusterKeys)+(0.01,0.15)$);
+      % % Low C/Eb cluster (gray)
+      \coordinate (lowClusterKeys) at (221.55pt,23pt);
+      \draw [fill=gray,rounded corners=0.025cm]
+        (lowClusterKeys) rectangle +(2pt,4.5pt)
+           ++(1pt,-3.5pt) ellipse (0.05cm and 0.08cm);
 
       % Pinky keys (red)
-      \coordinate (pinkyKeys) at (0.67,0.10);
+      \coordinate (pinkyKeys) at (227pt,12pt);
       % Left pinky key (semi-circle)
-      \draw [fill=red]
-        ($(pinkyKeys)$)
-          -- ($(pinkyKeys)-(-0.025,0)$)
-            arc (0:180:0.025)
-          -- ($(pinkyKeys)$);
+      \draw [fill=red] (pinkyKeys) +(2.5pt,0pt) arc (0:180:2.5pt) -- cycle;
+      \draw [fill=red] ($(pinkyKeys)-(0,0.7pt)$) +(-2.5pt,0pt) arc (180:360:2.5pt) -- cycle;
+
       % Right pinky key (semi-circle, shifted down)
       % \draw [fill=red]
-      %   ($(pinkyKeys)-(0.01,-0.025)-(0,0.06)$)
-      %     arc[start angle=180, end angle=360, radius=0.01cm] --
-      %   ($(pinkyKeys)+(0.01,-0.025)-(0,0.06)$)
-      %     arc[start angle=0, end angle=180, radius=0.01cm] -- cycle;
+      %   ($(pinkyKeys)-(3.4pt,-0.7pt)-(0pt,8.6pt)$)
+      %     arc[start angle=180, end angle=360, radius=3.4pt] --
+      %   ($(pinkyKeys)+(3.4pt,-0.7pt)-(0pt,8.6pt)$)
+      %     arc[start angle=0, end angle=180, radius=3.4pt] -- cycle;
     \end{tikzpicture}
 }
 
@@ -201,6 +201,8 @@
 
 \def\staffWidth{49.8pt}
 \def\staffStep{6.23pt}
+\def\sharpAdjustment{4.09pt}
+\def\flatAdjustment{3.984pt}
 
 % Macro to draw staff and key signature (compact, with vertical lines)
 \newcommand{\drawKeySignature}[1]{%
@@ -224,7 +226,7 @@
             \ifnum\i>\countacc\relax\else
               % compute x position so accidentals form a compact cluster
               \pgfmathsetmacro{\xpos}{0.25pt*(\i-1)+0.23pt}%
-              \node at (\xpos,\pos*\staffStep-4.214pt) {$\musSharp$};
+              \node at (\xpos,\pos*\staffStep-\sharpAdjustment) {$\musSharp$};
             \fi
           }
         \fi
@@ -234,7 +236,7 @@
           \foreach [count=\i] \pos in \flatPos {%
             \ifnum\i>\countacc\relax\else
               \pgfmathsetmacro{\xpos}{0.25pt*(\i-1)+0.23pt}%
-              \node at (\xpos,\pos*\staffStep-3.984pt) {$\musFlat$};
+              \node at (\xpos,\pos*\staffStep-\flatAdjustment) {$\musFlat$};
             \fi
           }
         \fi
