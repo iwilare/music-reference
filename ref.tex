@@ -3,63 +3,55 @@
 \usepackage{xparse}
 \usepackage{musicography}
 
+\usetikzlibrary{shapes.geometric}
 \usetikzlibrary{calc}
 
 \newif\ifrotateKeySignatures
 \newif\ifsaxKeys
 
-
-
 \newcommand{\drawSimpleSaxDiagram}[0]{%
     \begin{tikzpicture}
+      \begin{scope}[inner sep=0pt]
+
       % Palm keys (green)
-      \coordinate (palmKeys) at (231pt,50pt);
-      \draw [fill=green] (palmKeys)    ellipse (0.03cm and 0.13cm)
-                        +(1.7pt,5.1pt) ellipse (0.03cm and 0.13cm)
-                        +(3.7pt,2.6pt) ellipse (0.03cm and 0.13cm);
+      \node (PalmD) at (231pt,50pt) [draw, ellipse, minimum width=0.06cm, minimum height=0.26cm, fill=green] {};
+      \node (PalmDsharp) at ($(PalmD)+(1.7pt,5.1pt)$) [draw, ellipse, minimum width=0.06cm, minimum height=0.26cm, fill=green] {};
+      \node (PalmF) at ($(PalmD)+(3.7pt,2.6pt)$) [draw, ellipse, minimum width=0.06cm, minimum height=0.26cm, fill=green] {};
 
       % Main finger keys (blue)
-      \coordinate (mainKeys) at (227pt,50pt);
-      \draw [fill=blue] (mainKeys)       circle[radius=2.268pt]
-               +(0,5.37pt)        ellipse  (0.04cm and 0.09cm)
-               +(1.02pt,-4.34pt)  circle[radius=1.70pt,fill=blue]
-             ++(0,-9.18pt)        circle[radius=2.268pt,fill=red]
-             ++(0,-5.10pt)        circle[radius=2.268pt,fill=blue];
+      \node (FrontF) at ($(227pt,52.2pt)$) [draw, ellipse, minimum height=0.09cm, minimum width=0.17cm, fill=blue] {};
+
+      \node (B) at (227pt,48.2pt) [draw, circle, minimum size=4.1pt, xshift=-0.3pt, fill=red] {};
+      \node (Bbis) at ($(B)+(1.02pt,-3.3pt)$) [draw, circle, minimum size=2.4pt, fill=blue] {};
+      \node (A) at ($(227pt,50pt)+(0,-9.18pt)$) [draw, circle, minimum size=4.536pt, fill=red] {};
+      \node (G) at ($(A)+(0,-5.10pt)$) [draw, circle, minimum size=4.536pt, fill=blue] {};
 
       % Side keys (yellow)
-      \coordinate (sideKeys) at (233pt,35pt);
-      \draw [fill=yellow] (sideKeys) ellipse (0.1cm and 0.03cm)
-            [rounded corners=0.025cm] ++(-2.7pt, -1.2pt) rectangle +(2.7pt, -1.7pt)
-            [rounded corners=0.025cm] ++(2.7pt, 0) rectangle +(2.7pt, -1.7pt)
-                  (sideKeys) +(0pt, -4.0pt) ellipse (0.1cm and 0.03cm);
+      \node (Gsharp) at (233pt,38pt) [draw, shape=semicircle, rotate=0, minimum width=0.15cm, fill=yellow] {};
+      \node (LowB) at ($(Gsharp)+(0pt,-0.85pt)$) [draw, rectangle, rounded corners=0.025cm, minimum width=2.3pt, minimum height=1.7pt, fill=yellow,anchor=north east] {};
+      \node (LowCsharp) at ($(Gsharp)+(0pt,-0.85pt)$) [draw, rectangle, rounded corners=0.025cm, minimum width=2.3pt, minimum height=1.7pt, fill=yellow, anchor=north west] {};
+      \node (LowBflat) at ($(Gsharp)+(0pt,-4.0pt)$) [draw, shape=semicircle, rotate=180, minimum width=0.15cm, fill=yellow] {};
 
-      % Thumb hook (single line, not grouped)
       \draw[] [xshift=-3](227pt,31.8pt) -- ++(6pt,0pt);
 
       % Auxiliary keys (green rectangles)
-      \coordinate (auxKeys) at (221.55pt,38pt);
-      \draw [fill=green,rounded corners=0.025cm]
-          (auxKeys)     rectangle +(1.7pt,-4.1pt)
-        ++(0pt, -4.5pt) rectangle +(1.7pt,-4.1pt)
-        ++(0pt, -4.5pt) rectangle +(1.7pt,-4.1pt);
+      \node (AuxFsharp) at (221.55pt,38pt) [draw, rectangle, rounded corners=0.025cm, minimum width=1.7pt, minimum height=4.1pt, fill=green] {};
+      \node (AuxC) at ($(AuxFsharp)+(0pt,-4.5pt)$) [draw, rectangle, rounded corners=0.025cm, minimum width=1.7pt, minimum height=4.1pt, fill=green] {};
+      \node (AuxEb) at ($(AuxC)+(0pt,-4.5pt)$) [draw, rectangle, rounded corners=0.025cm, minimum width=1.7pt, minimum height=4.1pt, fill=green] {};
 
-      % % Lower stack keys (cyan circles)
-      \coordinate (lowerStackKeys) at (227pt,28pt);
-      \draw [fill=cyan] (lowerStackKeys) circle[radius=2.268pt]
-                       ++(0pt, -5.10pt)  circle[radius=2.268pt]
-                       ++(0pt, -5.10pt)  circle[radius=2.268pt];
-
-      % % Low C/Eb cluster (gray)
-      \coordinate (lowClusterKeys) at (221.55pt,18pt);
-      \draw [fill=gray,rounded corners=0.025cm]
-        (lowClusterKeys) rectangle +(2pt,4.5pt)
-           ++(1pt,-3.5pt) ellipse (0.05cm and 0.08cm);
+      % Lower stack keys (cyan circles)
+      \node (F) at (227pt,28pt) [draw, circle, minimum size=4.536pt, fill=cyan] {};
+      \node (E) at ($(F)+(0pt,-5.10pt)$) [draw, circle, minimum size=4.536pt, fill=cyan] {};
+      \node (D) at ($(E)+(0pt,-5.10pt)$) [draw, circle, minimum size=4.536pt, fill=cyan] {};
 
       % Pinky keys (red)
-      \coordinate (pinkyKeys) at (227pt,12pt);
-      % Left pinky key (semi-circle)
-      \draw [fill=red] (pinkyKeys) +(2.5pt,0pt) arc (0:180:2.5pt) -- cycle;
-      \draw [fill=red] ($(pinkyKeys)-(0,0.7pt)$) +(-2.5pt,0pt) arc (180:360:2.5pt) -- cycle;
+      \node (Dsharp) at ($(D)+(0pt,-5.1pt)$) [draw, fill=red, shape=semicircle, rotate=0, minimum width=5pt, minimum height=2.5pt] {};
+      \node (C) at ($(Dsharp)+(0pt,-2.7pt)$) [draw, fill=red, shape=semicircle, rotate=180, minimum width=5pt, minimum height=2.5pt] {};
+
+      % Low C/Eb cluster (gray)
+      \node (HighFsharp) at (221.55pt,21pt) [draw, rectangle, rounded corners=0.025cm, minimum width=2pt, minimum height=4.5pt, fill=gray] {};
+      \node (SideFsharp) at ($(HighFsharp)+(0pt,-6pt)$) [draw, ellipse, minimum width=0.1cm, minimum height=0.16cm, fill=gray] {};
+      \end{scope}
     \end{tikzpicture}
 }
 
