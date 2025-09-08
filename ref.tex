@@ -13,7 +13,7 @@
 \newcommand{\drawSimpleSaxDiagram}[0]{%
     \begin{tikzpicture}
       % Palm keys (green)
-      \coordinate (palmKeys) at (231.5pt,50pt);
+      \coordinate (palmKeys) at (231pt,50pt);
       \draw [fill=green] (palmKeys)    ellipse (0.03cm and 0.13cm)
                         +(1.7pt,5.1pt) ellipse (0.03cm and 0.13cm)
                         +(3.7pt,2.6pt) ellipse (0.03cm and 0.13cm);
@@ -21,10 +21,10 @@
       % Main finger keys (blue)
       \coordinate (mainKeys) at (227pt,50pt);
       \draw [fill=blue] (mainKeys)       circle[radius=2.268pt]
-                          +(0,5.37pt)     ellipse  (0.04cm and 0.09cm)
-                          +(1.02pt,-4.34pt) circle[radius=1.70pt]
-                        ++(0,-9.18pt)       circle[radius=2.268pt]
-                        ++(0,-5.10pt)       circle[radius=2.268pt];
+               +(0,5.37pt)        ellipse  (0.04cm and 0.09cm)
+               +(1.02pt,-4.34pt)  circle[radius=1.70pt,fill=blue]
+             ++(0,-9.18pt)        circle[radius=2.268pt,fill=red]
+             ++(0,-5.10pt)        circle[radius=2.268pt,fill=blue];
 
       % Side keys (yellow)
       \coordinate (sideKeys) at (233pt,35pt);
@@ -34,10 +34,10 @@
                   (sideKeys) +(0pt, -4.0pt) ellipse (0.1cm and 0.03cm);
 
       % Thumb hook (single line, not grouped)
-      % \draw[] (18pt,30pt) -- ++(24pt,-10pt);
+      \draw[] [xshift=-3](227pt,31.8pt) -- ++(6pt,0pt);
 
       % Auxiliary keys (green rectangles)
-      \coordinate (auxKeys) at (219pt,38pt);
+      \coordinate (auxKeys) at (221.55pt,38pt);
       \draw [fill=green,rounded corners=0.025cm]
           (auxKeys)     rectangle +(1.7pt,-4.1pt)
         ++(0pt, -4.5pt) rectangle +(1.7pt,-4.1pt)
@@ -50,7 +50,7 @@
                        ++(0pt, -5.10pt)  circle[radius=2.268pt];
 
       % % Low C/Eb cluster (gray)
-      \coordinate (lowClusterKeys) at (221.55pt,23pt);
+      \coordinate (lowClusterKeys) at (221.55pt,18pt);
       \draw [fill=gray,rounded corners=0.025cm]
         (lowClusterKeys) rectangle +(2pt,4.5pt)
            ++(1pt,-3.5pt) ellipse (0.05cm and 0.08cm);
@@ -60,13 +60,6 @@
       % Left pinky key (semi-circle)
       \draw [fill=red] (pinkyKeys) +(2.5pt,0pt) arc (0:180:2.5pt) -- cycle;
       \draw [fill=red] ($(pinkyKeys)-(0,0.7pt)$) +(-2.5pt,0pt) arc (180:360:2.5pt) -- cycle;
-
-      % Right pinky key (semi-circle, shifted down)
-      % \draw [fill=red]
-      %   ($(pinkyKeys)-(3.4pt,-0.7pt)-(0pt,8.6pt)$)
-      %     arc[start angle=180, end angle=360, radius=3.4pt] --
-      %   ($(pinkyKeys)+(3.4pt,-0.7pt)-(0pt,8.6pt)$)
-      %     arc[start angle=0, end angle=180, radius=3.4pt] -- cycle;
     \end{tikzpicture}
 }
 
