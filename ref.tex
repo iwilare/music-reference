@@ -2,6 +2,7 @@
 \usepackage{tikz}
 \usepackage{xparse}
 \usepackage{musicography}
+\usepackage{arrayjobx}
 
 \usetikzlibrary{shapes.geometric}
 \usetikzlibrary{calc}
@@ -9,71 +10,80 @@
 \newif\ifrotateKeySignatures
 \newif\ifsaxKeys
 
-\newcommand{\drawSimpleSaxDiagram}[0]{%
-    \begin{tikzpicture}
-      \begin{scope}[inner sep=0pt]
+% Custom color for pressed keys
+\definecolor{keyred}{RGB}{220,0,0}
 
-      % Palm keys (green)
-      \node (PalmD) at (231pt,50pt) [draw, ellipse, minimum width=0.06cm, minimum height=0.26cm, fill=green] {};
-      \node (PalmDsharp) at ($(PalmD)+(1.7pt,5.1pt)$) [draw, ellipse, minimum width=0.06cm, minimum height=0.26cm, fill=green] {};
-      \node (PalmF) at ($(PalmD)+(3.7pt,2.6pt)$) [draw, ellipse, minimum width=0.06cm, minimum height=0.26cm, fill=green] {};
-
-      % Main finger keys (blue)
-      \node (FrontF) at ($(227pt,52.2pt)$) [draw, ellipse, minimum height=0.09cm, minimum width=0.17cm, fill=blue] {};
-
-      \node (B) at (227pt,48.2pt) [draw, circle, minimum size=4.1pt, xshift=-0.3pt, fill=red] {};
-      \node (Bbis) at ($(B)+(1.02pt,-3.3pt)$) [draw, circle, minimum size=2.4pt, fill=blue] {};
-      \node (A) at ($(227pt,50pt)+(0,-9.18pt)$) [draw, circle, minimum size=4.536pt, fill=red] {};
-      \node (G) at ($(A)+(0,-5.10pt)$) [draw, circle, minimum size=4.536pt, fill=blue] {};
-
-      % Side keys (yellow)
-      \node (Gsharp) at (233pt,38pt) [draw, shape=semicircle, rotate=0, minimum width=0.15cm, fill=yellow] {};
-      \node (LowB) at ($(Gsharp)+(0pt,-0.85pt)$) [draw, rectangle, rounded corners=0.025cm, minimum width=2.3pt, minimum height=1.7pt, fill=yellow,anchor=north east] {};
-      \node (LowCsharp) at ($(Gsharp)+(0pt,-0.85pt)$) [draw, rectangle, rounded corners=0.025cm, minimum width=2.3pt, minimum height=1.7pt, fill=yellow, anchor=north west] {};
-      \node (LowBflat) at ($(Gsharp)+(0pt,-4.0pt)$) [draw, shape=semicircle, rotate=180, minimum width=0.15cm, fill=yellow] {};
-
-      \draw[] [xshift=-3](227pt,31.8pt) -- ++(6pt,0pt);
-
-      % Auxiliary keys (green rectangles)
-      \node (AuxFsharp) at (221.55pt,38pt) [draw, rectangle, rounded corners=0.025cm, minimum width=1.7pt, minimum height=4.1pt, fill=green] {};
-      \node (AuxC) at ($(AuxFsharp)+(0pt,-4.5pt)$) [draw, rectangle, rounded corners=0.025cm, minimum width=1.7pt, minimum height=4.1pt, fill=green] {};
-      \node (AuxEb) at ($(AuxC)+(0pt,-4.5pt)$) [draw, rectangle, rounded corners=0.025cm, minimum width=1.7pt, minimum height=4.1pt, fill=green] {};
-
-      % Lower stack keys (cyan circles)
-      \node (F) at (227pt,28pt) [draw, circle, minimum size=4.536pt, fill=cyan] {};
-      \node (E) at ($(F)+(0pt,-5.10pt)$) [draw, circle, minimum size=4.536pt, fill=cyan] {};
-      \node (D) at ($(E)+(0pt,-5.10pt)$) [draw, circle, minimum size=4.536pt, fill=cyan] {};
-
-      % Pinky keys (red)
-      \node (Dsharp) at ($(D)+(0pt,-5.1pt)$) [draw, fill=red, shape=semicircle, rotate=0, minimum width=5pt, minimum height=2.5pt] {};
-      \node (C) at ($(Dsharp)+(0pt,-2.7pt)$) [draw, fill=red, shape=semicircle, rotate=180, minimum width=5pt, minimum height=2.5pt] {};
-
-      % Low C/Eb cluster (gray)
-      \node (HighFsharp) at (221.55pt,21pt) [draw, rectangle, rounded corners=0.025cm, minimum width=2pt, minimum height=4.5pt, fill=gray] {};
-      \node (SideFsharp) at ($(HighFsharp)+(0pt,-6pt)$) [draw, ellipse, minimum width=0.1cm, minimum height=0.16cm, fill=gray] {};
-      \end{scope}
-    \end{tikzpicture}
+\pgfkeys{
+  /sax/.is family, /sax,
+  PalmD/.initial=0,
+  PalmDsharp/.initial=0,
+  PalmF/.initial=0,
+  FrontF/.initial=0,
+  B/.initial=0,
+  Bbis/.initial=0,
+  A/.initial=0,
+  G/.initial=0,
+  Gsharp/.initial=0,
+  LowB/.initial=0,
+  Csharp/.initial=0,
+  LowBflat/.initial=0,
+  F/.initial=0,
+  SideE/.initial=0,
+  SideC/.initial=0,
+  SideBflat/.initial=0,
+  E/.initial=0,
+  D/.initial=0,
+  Dsharp/.initial=0,
+  C/.initial=0,
+  HighFsharp/.initial=0,
+  SideFsharp/.initial=0,
+}
+\newcommand{\drawSimpleSaxDiagram}[1]{%
+  \begingroup
+  \pgfkeys{/sax, #1}%
+  % Helper macro to get fill color
+  \newcommand{\keycolor}[1]{%
+    \ifnum\pgfkeysvalueof{/sax/##1}=1 keyred\else white\fi
+  }%
+  \begin{tikzpicture}
+    \begin{scope}[inner sep=0pt]
+    % Palm keys
+    \node (PalmD) at (231pt,50pt) [draw, ellipse, minimum width=0.06cm, minimum height=0.26cm, fill=\keycolor{PalmD}] {};
+    \node (PalmDsharp) at ($(PalmD)+(1.7pt,5.1pt)$) [draw, ellipse, minimum width=0.06cm, minimum height=0.26cm, fill=\keycolor{PalmDsharp}] {};
+    \node (PalmF) at ($(PalmD)+(3.7pt,2.6pt)$) [draw, ellipse, minimum width=0.06cm, minimum height=0.26cm, fill=\keycolor{PalmF}] {};
+    % Main finger keys
+    \node (FrontF) at ($(227pt,52.2pt)$) [draw, ellipse, minimum height=0.09cm, minimum width=0.17cm, fill=\keycolor{FrontF}] {};
+    \node (B) at (227pt,48.2pt) [draw, circle, minimum size=4.1pt, xshift=-0.3pt, fill=\keycolor{B}] {};
+    \node (Bbis) at ($(B)+(1.02pt,-3.3pt)$) [draw, circle, minimum size=2.4pt, fill=\keycolor{Bbis}] {};
+    \node (A) at ($(227pt,50pt)+(0,-9.18pt)$) [draw, circle, minimum size=4.536pt, fill=\keycolor{A}] {};
+    \node (G) at ($(A)+(0,-5.10pt)$) [draw, circle, minimum size=4.536pt, fill=\keycolor{G}] {};
+    % Break
+    \draw [] [xshift=-3](227pt,31.8pt) -- ++(6pt,0pt);
+    % Plane keys
+    \node (Gsharp) at (233pt,38pt) [draw, shape=semicircle, rotate=0, minimum width=0.15cm, fill=\keycolor{Gsharp}] {};
+    \node (Csharp) at ($(Gsharp)+(0pt,-0.85pt)$) [draw, rectangle, rounded corners=0.025cm, minimum width=2.3pt, minimum height=1.7pt, anchor=north west, fill=\keycolor{Csharp}] {};
+    \node (LowB) at ($(Gsharp)+(0pt,-0.85pt)$) [draw, rectangle, rounded corners=0.025cm, minimum width=2.3pt, minimum height=1.7pt, anchor=north east, fill=\keycolor{LowB}] {};
+    \node (LowBflat) at ($(Gsharp)+(0pt,-4.0pt)$) [draw, shape=semicircle, rotate=180, minimum width=0.15cm, fill=\keycolor{LowBflat}] {};
+    % Lower stack keys
+    \node (F) at (227pt,28pt) [draw, circle, minimum size=4.536pt, fill=\keycolor{F}] {};
+    % Side keys
+    \node (SideE) at (221.55pt,38pt) [draw, rectangle, rounded corners=0.025cm, minimum width=1.7pt, minimum height=4.1pt, fill=\keycolor{SideE}] {};
+    \node (SideC) at ($(SideE)+(0pt,-4.5pt)$) [draw, rectangle, rounded corners=0.025cm, minimum width=1.7pt, minimum height=4.1pt, fill=\keycolor{SideC}] {};
+    \node (SideBflat) at ($(SideC)+(0pt,-4.5pt)$) [draw, rectangle, rounded corners=0.025cm, minimum width=1.7pt, minimum height=4.1pt, fill=\keycolor{SideBflat}] {};
+    % Lower stack keys
+    \node (E) at ($(F)+(0pt,-5.10pt)$) [draw, circle, minimum size=4.536pt, fill=\keycolor{E}] {};
+    \node (D) at ($(E)+(0pt,-5.10pt)$) [draw, circle, minimum size=4.536pt, fill=\keycolor{D}] {};
+    % Pinky keys
+    \node (Dsharp) at ($(D)+(0pt,-4.35pt)$) [draw, shape=semicircle, rotate=0, minimum width=5pt, minimum height=2.5pt, fill=\keycolor{Dsharp}] {};
+    \node (C) at ($(Dsharp)+(0pt,-2.7pt)$) [draw, shape=semicircle, rotate=180, minimum width=5pt, minimum height=2.5pt, fill=\keycolor{C}] {};
+    % Low C/Eb cluster
+    \node (HighFsharp) at (221.55pt,21pt) [draw, rectangle, rounded corners=0.025cm, minimum width=2pt, minimum height=4.5pt, fill=\keycolor{HighFsharp}] {};
+    \node (SideFsharp) at ($(HighFsharp)+(0pt,-6pt)$) [draw, ellipse, minimum width=0.1cm, minimum height=0.16cm, fill=\keycolor{SideFsharp}] {};
+    \end{scope}
+  \end{tikzpicture}
+  \endgroup
 }
 
-
-
-
-% Define note names
-\newcommand{\simpleSaxDiagram}[1]{%
-  \ifcase#1
-  \or \drawSimpleSaxDiagram %D%
-  \or \drawSimpleSaxDiagram %E$\flat$%
-  \or \drawSimpleSaxDiagram %E%
-  \or \drawSimpleSaxDiagram %F%
-  \or \drawSimpleSaxDiagram %F$\sharp$%
-  \or \drawSimpleSaxDiagram %G%
-  \or \drawSimpleSaxDiagram %A$\flat$%
-  \or \drawSimpleSaxDiagram %A%
-  \or \drawSimpleSaxDiagram %B$\flat$%
-  \or \drawSimpleSaxDiagram %B%
-  \else ?%
-  \fi
-}
 \newcommand{\noteName}[1]{%
   \ifcase#1
       C%
@@ -280,9 +290,9 @@
     \node[anchor=base, yshift={-1*\staffStep}] at (#2:{\sheetdistance{\j}+#4}) {\drawKeySignature{\pc}};
   \fi
 
-  \ifsaxKeys
-    \node[anchor=base, rotate=#2-\counterrotation, shift={(0,-\staffStep)}] at (#2:{\saxnotesdistance+2*\rotatedsheetdistance+#4}) {\simpleSaxDiagram{\pc}};
-  \fi
+  % \ifsaxKeys
+  %   \node[anchor=base, rotate=#2-\counterrotation, shift={(0,-\staffStep)}] at (#2:{\saxnotesdistance+2*\rotatedsheetdistance+#4}) {\simpleSaxDiagram{\pc}};
+  % \fi
 }
 
 \newcommand{\innerSectorNoteMinor}[4]{%
@@ -295,6 +305,66 @@
     \node[font=\bfseries\large, inner sep=-1.8pt] at (#2:#3) {\small \note m};
   \fi
 }
+
+% Note names for the above MIDI numbers
+\newcommand{\saxNoteName}[1]{%
+  \pgfmathtruncatemacro{\idx}{#1-58}
+  \ifcase\idx
+      B$\flat$3
+  \or B3
+  \or C4
+  \or C$\sharp$4
+  \or D4
+  \or E$\flat$4
+  \or E4
+  \or F4
+  \or F$\sharp$4
+  \or G4
+  \or A$\flat$4
+  \or A4
+  \or B$\flat$4
+  \or B4
+  \or C5
+  \or C$\sharp$5
+  \or D5
+  \or E$\flat5$
+  \or E5
+  \or F5
+  \or F$\sharp$5
+  \else ?\fi
+}
+
+% Macro: takes a MIDI note number, subtracts 58, and draws the correct fingering
+\newcommand{\saxFingering}[1]{%
+  \pgfmathtruncatemacro{\idx}{#1-58}
+  \ifcase\idx
+       \drawSimpleSaxDiagram{B=1,A=1,G=1,F=1,E=1,D=1,C=1,LowBflat=1}       % Low Bb (MIDI 58)
+   \or \drawSimpleSaxDiagram{B=1,A=1,G=1,F=1,E=1,D=1,C=1,LowB=1}           % B
+   \or \drawSimpleSaxDiagram{B=1,A=1,G=1,F=1,E=1,D=1,C=1}                  % C
+   \or \drawSimpleSaxDiagram{B=1,A=1,G=1,F=1,E=1,D=1,C=1,Csharp=1}         % C#
+   \or \drawSimpleSaxDiagram{B=1,A=1,G=1,F=1,E=1,D=1}                      % D
+   \or \drawSimpleSaxDiagram{B=1,A=1,G=1,F=1,E=1,D=1,Dsharp=1}             % D#
+   \or \drawSimpleSaxDiagram{B=1,A=1,G=1,F=1,E=1}                          % E
+   \or \drawSimpleSaxDiagram{B=1,A=1,G=1,F=1}                              % F
+   \or \drawSimpleSaxDiagram{B=1,A=1,G=1,E=1}                              % F#
+   \or \drawSimpleSaxDiagram{B=1,A=1,G=1}                                  % G
+   \or \drawSimpleSaxDiagram{B=1,A=1,G=1,Gsharp=1}                         % G#
+   \or \drawSimpleSaxDiagram{B=1,A=1}                                      % A
+   \or \drawSimpleSaxDiagram{B=1,A=1,SideBflat=1}                          % Bb
+   \or \drawSimpleSaxDiagram{B=1}                                          % B
+   \or \drawSimpleSaxDiagram{A=1}                                             % C (high)
+   \or \drawSimpleSaxDiagram{}                                     % C# (high)
+   \or \drawSimpleSaxDiagram{PalmD=1}                                      % D (high, palm)
+   \or \drawSimpleSaxDiagram{PalmD=1,PalmDsharp=1}                         % Eb (high, palm)
+   \or \drawSimpleSaxDiagram{PalmD=1,PalmDsharp=1,SideE=1}                                 % E (high, palm)
+   \or \drawSimpleSaxDiagram{PalmD=1,PalmDsharp=1,SideE=1,PalmF=1}                              % F (high, palm)
+   \or \drawSimpleSaxDiagram{PalmD=1,PalmDsharp=1,SideE=1,PalmF=1,HighFsharp=1}                % F# (high, palm)
+  \else
+    % Default: all keys up
+    \drawSimpleSaxDiagram{}
+  \fi
+}
+
 
 \begin{document}
 \rotateKeySignaturestrue
@@ -324,5 +394,48 @@
 \drawCircularSectors{2.1pt}{1.0pt}{12}{\sectorNodeDefault}
 \drawCircularSectors{1.3pt}{0.8pt}{12}{\innerSectorNoteMinor}
 \end{tikzpicture}
+
+% Fingering chart page
+\newpage
+
+
+% Alto sax standard fingerings for notes D4 (MIDI 50) to F#5 (MIDI 78)
+% Each entry: {PalmD}{PalmDsharp}{PalmF}{FrontF}{B}{Bbis}{A}{G}{Gsharp}{LowB}{Csharp}{LowBflat}{F}
+
+% \begin{center}
+% \begin{tabular}{cccc}
+% \foreach \n in {0,...,16} {
+%   \begin{tabular}{c}
+%     \saxFingering{\n} \\
+%     \saxNoteName{\n}
+%   \end{tabular}
+%   % Add column separator except after last column
+%   \ifnum\n=3 & \fi
+%   \ifnum\n=7 & \fi
+%   \ifnum\n=11 & \fi
+%   % Add row separator after every 4 columns
+%   \ifnum\n=3 \\\fi
+%   \ifnum\n=7 \\\fi
+%   \ifnum\n=11 \\\fi
+% }
+% \end{tabular}
+% \end{center}
+
+% \saxFingering{3}
+
+%\drawSimpleSaxDiagram{PalmD=1,PalmF=1,B=1,A=0,G=1,LowB=1}
+
+\begin{center}
+\begin{tikzpicture}
+\foreach \x in {58,...,78} {
+  \node at (18pt*\x,        0pt) {\saxFingering{\x}};
+  \node at (18pt*\x-3pt,      -34pt) {\saxNoteName{\x}};
+}
+\end{tikzpicture}
+\end{center}
+
+%   \drawSaxFingeringFromMidi{58}
+% \drawSaxFingeringFromMidi{64}
+% \drawSaxFingeringFromMidi{65}
 
 \end{document}
