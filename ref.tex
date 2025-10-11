@@ -290,9 +290,17 @@
     \node[anchor=base, yshift={-1*\staffStep}] at (#2:{\sheetdistance{\j}+#4}) {\drawKeySignature{\pc}};
   \fi
 
-  % \ifsaxKeys
-  %   \node[anchor=base, rotate=#2-\counterrotation, shift={(0,-\staffStep)}] at (#2:{\saxnotesdistance+2*\rotatedsheetdistance+#4}) {\simpleSaxDiagram{\pc}};
-  % \fi
+  \ifsaxKeys
+    \node[anchor=base, rotate=#2-\counterrotation, shift={(0,-\staffStep)}] at (#2:{\saxnotesdistance+2*\rotatedsheetdistance+#4}) {
+      \begin{tikzpicture}
+        \foreach \x in {58,...,78} {
+          \pgfmathsetmacro{\val}{#1+\x}%
+          \node at (18pt*\x, 0pt) {\saxFingering{\val}};
+          %\node at (18pt*\x-3pt,      -34pt) {\saxNoteName{\val}};
+        }
+      \end{tikzpicture}
+    }
+  \fi
 }
 
 \newcommand{\innerSectorNoteMinor}[4]{%
@@ -367,16 +375,16 @@
 
 
 \begin{document}
-\rotateKeySignaturestrue
-\saxKeysfalse
-\def\rotatedsheetdistance{0.4}
-\def\counterrotation{90}
-\def\labeloffset{0.055}
-\begin{tikzpicture}
-\drawCircularSectors{2.1pt}{1.0pt}{12}{\sectorNodeDefault}
-\drawCircularSectors{1.5pt}{0.6pt}{12}{\innerSectorNoteMinor}
-\end{tikzpicture}
-\clearpage
+% \rotateKeySignaturestrue
+% \saxKeysfalse
+% \def\rotatedsheetdistance{0.4}
+% \def\counterrotation{90}
+% \def\labeloffset{0.055}
+% \begin{tikzpicture}
+% \drawCircularSectors{2.1pt}{1.0pt}{12}{\sectorNodeDefault}
+% \drawCircularSectors{1.5pt}{0.6pt}{12}{\innerSectorNoteMinor}
+% \end{tikzpicture}
+% \clearpage
 \rotateKeySignaturestrue
 \saxKeystrue
 \def\rotatedsheetdistance{0.6}
@@ -386,13 +394,13 @@
 \drawCircularSectors{2.1pt}{1.0pt}{12}{\sectorNodeDefault}
 \drawCircularSectors{1.2pt}{0.9pt}{12}{\innerSectorNoteMinor}
 \end{tikzpicture}
-\clearpage
-\begin{tikzpicture}
-\rotateKeySignaturesfalse
-\saxKeysfalse
-\def\labeloffset{0}
-\drawCircularSectors{2.1pt}{1.0pt}{12}{\sectorNodeDefault}
-\drawCircularSectors{1.3pt}{0.8pt}{12}{\innerSectorNoteMinor}
+% \clearpage
+% \begin{tikzpicture}
+% \rotateKeySignaturesfalse
+% \saxKeysfalse
+% \def\labeloffset{0}
+% \drawCircularSectors{2.1pt}{1.0pt}{12}{\sectorNodeDefault}
+% \drawCircularSectors{1.3pt}{0.8pt}{12}{\innerSectorNoteMinor}
 \end{tikzpicture}
 
 % Fingering chart page
