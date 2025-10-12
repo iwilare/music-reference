@@ -9,7 +9,7 @@
 #let class-to-sharps-and-flats(pc) = { (0, -5, 2, -3, 4, -1, 6, 1, -4, 3, -2, 5).at(pc) }
 
 #let note-name(idx) = {
-  ("C", "D♭", "D", "E♭", "E", "F", "F♯", "G", "A♭", "A", "B♭", "B").at(calc.rem(idx, 12))
+  ("C", "", "D", "E♭", "E", "F", "", "G", "A♭", "A", "B♭", "").at(calc.rem(idx, 12))
 }
 
 #let note-name-alt(idx) = {
@@ -191,7 +191,7 @@
   import cetz.draw: *
   let pc = calc.rem(7 * j, 12)
   content((0,0), text(weight: "bold", font: "New Computer Modern Math", size: 14pt, note-name(pc)))
-  floating(content((0, -11pt), text(font: "New Computer Modern Math", fill: rgb("#565656"), weight: "regular", size: 9.5pt, note-name-alt(pc - 2))))
+  // floating(content((0, -11pt), text(font: "New Computer Modern Math", fill: rgb("#565656"), weight: "regular", size: 9.5pt, note-name-alt(pc - 2))))
 })
 
 #let sheet-distance(j) = {
@@ -271,7 +271,57 @@
     draw-circular-sectors(radius, width, 12, fill: rgb(0, 0, 255, 30%), stroke: (thickness: 1.2pt, paint: black), sector-node-default)
     draw-circular-sectors(radius - width, width * 0.7, 12, fill: rgb(0, 0, 255, 30%), stroke: (thickness: 1.2pt, paint: black), inner-sector-note-minor)
     draw-circular-sectors(radius, 0mm, 12, signature-sector, custom-distances: sheet-distance)
+
+    // bezier()
+    // circle((angle: 360deg*10.5/12, radius: radius - width), radius: 3mm, fill: rgb(255, 0, 0, 50%))
+    // circle((angle: 360deg*7.5/12, radius: radius), radius: 3mm, fill: rgb(255, 0, 0, 50%))
+
+
+/*
+    cetz.draw.merge-path({
+      let a = 360deg*7.5/12
+      let b = 360deg*10.5/12
+      bezier(
+        (angle: a, radius: radius),
+        (angle: a + 360deg*0.5/12, radius: radius - width/2),
+        (rel: (angle: a + 90deg, radius: 6mm), to: (angle: a, radius: radius)),
+        (rel: (angle: a + 2*360deg*0.5/12 - 90deg, radius: 6mm), to: (angle: a + 360deg*0.5/12, radius: radius - width/2)),
+      )
+      arc-through(
+          (angle: a + 360deg*0.5/12, radius: radius - width/2),
+          (angle: a + 2*360deg*0.5/12, radius: radius - width/2),
+          (angle: b - 360deg*0.5/12, radius: radius - width/2))
+      bezier(
+        (angle: b - 360deg*0.5/12, radius: radius - width/2),
+        (angle: b, radius: radius - width),
+        (rel: (angle: b - 2*360deg*0.5/12 + 90deg, radius: 5mm), to: (angle: b - 360deg*0.5/12, radius: radius - width/2)),
+        (rel: (angle: b - 90deg, radius: 3.5mm), to: (angle: b, radius: radius - width)),
+      )
+    })
+*/
+
+      let a = 360deg*7.5/12
+      let b = 360deg*10.5/12
+    cetz.draw.merge-path({
+      bezier(
+        (angle: a, radius: radius),
+        (angle: a + 360deg*0.5/12, radius: radius - width/2),
+        (rel: (angle: a + 90deg, radius: 5mm), to: (angle: a, radius: radius)),
+        (rel: (angle: a + 360deg*0.5/12 - 90deg, radius: 7mm), to: (angle: a + 360deg*0.5/12, radius: radius - width/2)),
+      )
+      arc-through(
+          (angle: a + 360deg*0.5/12, radius: radius - width/2),
+          (angle: a + 2*360deg*0.5/12, radius: radius - width/2),
+          (angle: b - 360deg*0.5/12, radius: radius - width/2))
+      bezier(
+        (angle: b - 360deg*0.5/12, radius: radius - width/2),
+        (angle: b, radius: radius - width),
+        (rel: (angle: b - 360deg*0.5/12 + 90deg, radius: 7mm), to: (angle: b - 360deg*0.5/12, radius: radius - width/2)),
+        (rel: (angle: b - 90deg, radius: 5mm), to: (angle: b, radius: radius - width)),
+      )
+    })
   })
+
 }
 
 #circle-of-fifths(3.5cm, 1.3cm)
