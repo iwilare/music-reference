@@ -9,15 +9,7 @@
 #let class-to-sharps-and-flats(pc) = { (0, -5, 2, -3, 4, -1, 6, 1, -4, 3, -2, 5).at(pc) }
 
 #let note-name(idx) = {
-  ("C", "C♯", "D", "E♭", "E", "F", "F♯", "G", "A♭", "A", "B♭", "B").at(calc.rem(idx, 12))
-}
-
-#let note-name-alt(idx) = {
-  ("C", "D♭", "D", "D♯", "E", "F", "G♭", "G", "G♯", "A", "A♯", "C♭").at(calc.rem(idx, 12))
-}
-
-#let note-name-minor(idx) = {
-  ("C", "C♯", "D", "D♯", "E", "F", "F♯", "G", "G♯", "A", "B♭", "B").at(calc.rem(idx, 12))
+  ("C", "C♯", "D", "E♭", "E", "F", "F♯", "G", "G♯", "A", "B♭", "B").at(calc.rem(idx, 12))
 }
 
 #set text(font: "New Computer Modern Math", size: 14pt, weight: "bold")
@@ -139,8 +131,6 @@
   (PalmD: 1, PalmDsharp: 1, SideE: 1, PalmF: 1, HighFsharp: 1),
 )
 
-#let sax-note-names = ("B♭3", "B3", "C4", "C♯4", "D4", "E♭4", "E4", "F4", "F♯4", "G4", "A♭4", "A4", "B♭4", "B4", "C5", "C♯5", "D5", "E♭5", "E5", "F5", "F♯5")
-
 // Sax fingering from MIDI note
 #let sax-fingering(midi) = {
   let idx = midi - 58
@@ -193,23 +183,10 @@
   import cetz.draw: *
   let pc = calc.rem(7 * j, 12)
 
-  if j == 5 {
-    floating(content((rel: (angle: angle + 90deg, radius: -1.2mm), to: (angle: angle, radius: -3.4mm)), text(note-name-alt(pc))))
-    floating(content((rel: (angle: angle + 90deg, radius: 0mm), to: (angle: angle, radius: +3.2mm)), text(note-name(pc))))
-    content((0,0), [])
-  } else if j == 6 {
-    floating(content((rel: (angle: angle + 90deg, radius: 0mm), to: (angle: angle, radius: -3.3mm)), text(note-name-alt(pc))))
-    floating(content((angle: angle, radius: +3.5mm), text(note-name(pc))))
-    content((0,0), [])
-  } else if j == 7 {
-    floating(content((rel: (angle: angle + 90deg, radius: -0.1mm), to: (angle: angle, radius: -3.3mm)), text(note-name-alt(pc))))
-    floating(content((rel: (angle: angle + 90deg, radius: 1.7mm), to: (angle: angle, radius: +3.7mm)), text(note-name(pc))))
-    content((0,0), [])
-  } else {
-    content((0,0), text(note-name(pc))) }
+  content((0,0), text(note-name(pc)))
 
   // sax note:
-  // floating(content((0, -11pt), text(font: "New Computer Modern Math", fill: rgb("#565656"), weight: "regular", size: 9.5pt, note-name-alt(pc - 2))))
+  floating(content((0, -11pt), text(font: "New Computer Modern Math", fill: rgb("#565656"), weight: "regular", size: 9.5pt, note-name(pc - 2))))
 })
 
 #let sheet-distance(j) = {
@@ -243,7 +220,7 @@
 #let inner-sector-note-minor(j, angle, mid-radius, outer-radius) = {
   import cetz.draw: *
   let pc = calc.rem(7 * j + 9, 12)
-  let note = note-name-minor(pc)
+  let note = note-name(pc)
   text(font: "New Computer Modern Math", weight: "bold", size: 9.5pt, note + "m")
 }
 
@@ -282,41 +259,16 @@
   }
 }
 
-#pagebreak()
-
 #let circle-of-fifths(radius, width) = {
   cetz.canvas({
     draw-circular-sectors(radius, width, 12, fill: rgb(0, 0, 255, 30%), stroke: (thickness: 1.2pt, paint: black), sector-node-default)
     draw-circular-sectors(radius - width, width * 0.7, 12, fill: rgb(0, 0, 255, 30%), stroke: (thickness: 1.2pt, paint: black), inner-sector-note-minor)
     draw-circular-sectors(radius, 0mm, 12, signature-sector, custom-distances: sheet-distance)
-
-    let a = 360deg*7.5/12
-    let b = 360deg*10.5/12
-    cetz.draw.merge-path({
-      bezier(
-        (angle: a, radius: radius),
-        (angle: a + 360deg*0.5/12, radius: radius - width/2),
-        (rel: (angle: a + 90deg, radius: 5mm), to: (angle: a, radius: radius)),
-        (rel: (angle: a + 360deg*0.5/12 - 90deg, radius: 7mm), to: (angle: a + 360deg*0.5/12, radius: radius - width/2)),
-      )
-      arc-through(
-          (angle: a + 360deg*0.5/12, radius: radius - width/2),
-          (angle: a + 2*360deg*0.5/12, radius: radius - width/2),
-          (angle: b - 360deg*0.5/12, radius: radius - width/2))
-      bezier(
-        (angle: b - 360deg*0.5/12, radius: radius - width/2),
-        (angle: b, radius: radius - width),
-        (rel: (angle: b - 360deg*0.5/12 + 90deg, radius: 8mm), to: (angle: b - 360deg*0.5/12, radius: radius - width/2)),
-        (rel: (angle: b - 90deg, radius: 4mm), to: (angle: b, radius: radius - width)),
-      )
-    })
   })
 
 }
 
 #circle-of-fifths(3.5cm, 1.3cm)
-
-#pagebreak()
 
 // Main document
 
@@ -330,50 +282,37 @@
 #let counter-rotation = 0
 #let label-offset = 0
 
-// #content((0, 0.5), image("flat.svg", height: 2.1 * 3mm))
-/*
-#cetz.canvas({
-  import cetz.draw: *
+#let scale-degrees = ("I", "", "III", "IV", "V", " ", " ", "I", " ", "III", "IV", "XII")
 
-  // Draw outer ring (major keys with fingerings)
-  draw-circular-sectors(2.1, 1.0, 12,
-    (j, angle, mid-radius, outer-radius, rotate-keys, counter-rotation) => {
-      sector-node-default(j, angle, mid-radius, outer-radius, rotate-keys, sax-keys, rotated-sheet-distance, counter-rotation, label-offset)
-    },
-    rotate-keys: rotate-keys,
-    sax-keys: sax-keys,
-    rotated-sheet-distance: rotated-sheet-distance,
-    counter-rotation: counter-rotation,
-    label-offset: label-offset
+// Major scale pattern in semitones from tonic
+#let major-scale-pattern = (0, 2, 4, 5, 7, 9, 11, 12, 14, 16, 17, 19)
+
+#let make-scale-table() = {
+  table(
+    columns: scale-degrees.len() + 1,
+    align: center + horizon,
+    stroke: 0.5pt,
+    inset: 5pt,
+    table.header("Name", ..scale-degrees),
+    ..(for tonic in range(-2, 12) { // Starting from Bb3, going up chromatically
+      let key-idx = tonic + 60
+
+      // First column: Key name + signature
+      ([#draw-key-signature(calc.rem(tonic, 12), 8mm)  #note-name(tonic)],
+       ..for degree in major-scale-pattern {
+         let pc = key-idx + degree
+         if pc < 79 {
+           ([#box(height: 20mm, sax-fingering(pc))],)
+         } else {
+           ([],)
+         }
+       })
+    })
   )
+}
 
-  // Draw inner ring (minor keys)
-  draw-circular-sectors(1.2, 0.9, 12,
-    (j, angle, mid-radius, outer-radius, rotate-keys, counter-rotation) => {
-      inner-sector-note-minor(j, angle, mid-radius, outer-radius, rotate-keys, counter-rotation)
-    },
-    rotate-keys: rotate-keys,
-    counter-rotation: counter-rotation
-  )
-})
-*/
-
-// Fing ering chart page
-// #pagebreak()
-
-
-// #align(center)[
-//   #text(size: 16pt, weight: "bold")[Alto Saxophone Fingering Chart]
-
-//   #v(1em)
-
-//   #cetz.canvas({
-//     import cetz.draw: *
-
-//     for x in range(58, 79) {
-//       let idx = x - 58
-//       content((idx * 0.92, 0), sax-fingering(x))
-//       content((idx * 0.92, -1.2), text(size: 8pt, sax-note-names.at(idx)))
-//     }
-//   })
-// ]
+#align(center)[
+  #text(size: 16pt, weight: "bold")[Saxophone Scale Fingering Chart]
+  #v(1em)
+  #make-scale-table()
+]
