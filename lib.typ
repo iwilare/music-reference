@@ -2,41 +2,155 @@
 
 #import cetz.draw: *
 
-#let dictionaryC  = (E: orange, D: orange, ShadowC: green, F: orange, G: orange, A: orange, B: orange, C: green, PalmD: blue, SideE: blue, PalmF: blue, LowB: orange, )
-#let dictionaryCs = (Dsharp: orange, B: orange, Bbis: orange, ShadowC: orange, ShadowCsharp: orange, Gsharp: green,  ShadowFsharp: orange, G: orange, C: orange, Csharp: orange, PalmDsharp: blue, HighFsharp: blue, MoveEflatSideways: 1.2, LowBflat: orange)
-#let dictionaryD  = (ShadowC: none, E: orange, D: green, ShadowFsharp: orange, G: orange, A: orange, B: orange, ShadowCsharpAlt: orange, Csharp: orange, LowB: orange, PalmD: green, HighFsharp: blue, SideE: orange, )
-#let dictionaryEb = (D: orange, Dsharp: green, B: orange, Bbis: orange, ShadowC: orange, Gsharp: orange, F: orange, G: orange, C: orange, PalmD: blue, PalmF: blue, PalmDsharp: green, MoveEflatSideways: 1.2, LowBflat: orange)
-#let dictionaryE  = (E: green, Dsharp: orange, ShadowFsharp: orange, A: orange, B: orange, Gsharp: orange, Csharp: orange, ShadowCsharpAlt: orange, LowB: orange, MoveEflatSideways: 1.2, PalmDsharp: blue, HighFsharp: blue, SideE: green, )
-#let dictionaryF  = (E: orange, D: orange, Bbis: orange, ShadowC: orange, F: green, G: orange, A: orange, B: orange, C: orange, PalmD: blue, SideE: blue, PalmF: green, LowBflat: orange)
-#let dictionaryFs = (:)
-#let dictionaryG  = (E: orange, D: orange, G: green, A: orange, B: orange, LowB: orange, LowA: orange, ShadowC: orange, ShadowFsharp: orange, PalmD: blue, SideE: blue, HighFsharp: blue, C: orange, )
-#let dictionaryGs = (Dsharp: orange, B: orange, Bbis: orange, ShadowC: orange, ShadowCsharp: orange, Gsharp: green, F: orange, G: orange, C: orange, Csharp: orange, PalmDsharp: blue, HighFsharp: blue, MoveEflatSideways: 1.2, LowBflat: orange)
-#let dictionaryA  = (E: orange, D: orange, A: green, B: orange, Gsharp: orange, Csharp: orange, LowB: orange, ShadowCsharpAlt: orange, ShadowFsharp: orange, PalmD: blue, HighFsharp: blue, SideE: blue, )
-#let dictionaryBb = (D: orange, Dsharp: orange, B: green, Bbis: green, ShadowC: orange, F: orange, G: orange, A: orange, C: orange, PalmD: blue, PalmDsharp: blue, PalmF: blue, MoveEflatSideways: 1.2, LowBflat: orange)
-#let dictionaryB  = (E: orange, Dsharp: orange, SideBflat: orange, B: green, Gsharp: orange, Csharp: orange, LowB: green, ShadowFsharp: orange, ShadowCsharpAlt: orange, PalmDsharp: blue, HighFsharp: blue, LowBflat: orange, SideE: blue, MoveEflatSideways: 2, )
-
-
-
-#let dictionaries = (
-  dictionaryC,
-  dictionaryCs,
-  dictionaryD,
-  dictionaryEb,
-  dictionaryE,
-  dictionaryF,
-  dictionaryFs,
-  dictionaryG,
-  dictionaryGs,
-  dictionaryA,
-  dictionaryBb,
-  dictionaryB,
-)
-
-#let note-name(idx) = {
-  ("C", "C♯", "D", "E♭", "E", "F", "F♯", "G", "G♯", "A", "B♭", "B").at(calc.rem(idx, 12))
+#let from-note-code(idx) = {
+  ("C", "Cs", "D", "Eb", "E", "F", "Fs", "G", "Gs", "A", "Bb", "B").at(calc.rem(idx, 12))
 }
 
-#let class-to-sharps-and-flats(pc) = { (0, -5, 2, -3, 4, -1, 6, 1, -4, 3, -2, 5).at(calc.rem(pc, 12)) }
+#let is-diatonic(idx) = {
+  (1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1).at(calc.rem(idx, 12)) == 1
+}
+
+#let note-name(idx) = {
+  ("C", "D♭", "D", "E♭", "E", "F", "G♭", "G", "A♭", "A", "B♭", "B").at(calc.rem(idx, 12))
+}
+
+#let from-note-name(name) = {
+  zip(("C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"), range(0, 12))
+     .find((v, i)  => v == name, default: (0, 0))
+     .at(1)
+}
+
+#let note-name-sharp(idx) = {
+  ("B♯", "C♯", "D", "D♯", "E", "E♯", "F♯", "G", "G♯", "A", "A♯", "B").at(calc.rem(idx, 12))
+}
+
+#let note-name-flat(idx) = {
+  ("C", "D♭", "D", "E♭", "F♭", "F", "G♭", "G", "A♭", "A", "B♭", "C♭").at(calc.rem(idx, 12))
+}
+
+#let sharps-and-flats(pc) = { (0, -5, 2, -3, 4, -1, 6, 1, -4, 3, -2, 5).at(calc.rem(pc, 12)) }
+
+// exclude the second octave since it's the same as the first
+#let sax-codes = range(-2, 18 + 1)
+
+#let main-choice-sax-keys = (
+  ("LowBb",),    // -2
+  ("LowB",),     // 1
+  ("LowC",),     // 0
+  ("LowCs",),    // 1
+  ("D",),        // 2
+  ("LowEb",),    // 3
+  ("E",),        // 4
+  ("F",),        // 5
+  ("ShadowFs", "SideFs"), // 6
+  ("G",),        // 7
+  ("Gs",),       // 8
+  ("A",),        // 9
+  ("SideBb", "Bbis"), // 10
+  ("B",),        // 11
+  ("ShadowC", "SideC"), // 12
+  ("ShadowCs",),  // 13
+  ("PalmD",),    // 14
+  ("PalmEb"),    // 15
+  ("SideE",),    // 16
+  ("PalmF",),    // 17
+  ("HighFs",),   // 18
+)
+
+#let special-choices-settings = (
+  Cs: (:),
+  D:  ("ShadowCsAlt",),
+  Eb: (:),
+  E:  ("ShadowCsAlt",),
+  Gs: ("Bbis",),
+  A:  ("ShadowCsAlt",),
+  F:  ("Bbis",),
+  Bb: (:),
+  B:  ("ShadowCsAlt",),
+)
+
+#let special-effects = (
+  Cs: ("SidewaysEb",),
+  D:  (:),
+  Eb: ("SidewaysEb",),
+  E:  ("SidewaysEb",),
+  Gs: ("SidewaysEb",),
+  A:  (),
+  F:  (),
+  Bb: ("SidewaysEb",),
+  B:  ("SidewaysEb",),
+)
+
+
+#let main-choice-sax-key-from-note = i => {
+  main-choice-sax-keys.at(calc.rem(i + 2, 21))
+}
+
+#let is-low = key => {
+  key in (-2, 1, 0, 1)
+}
+#let is-high = key => {
+  key in (14, 15, 16, 17, 18)
+}
+
+
+#let sax-fingerings = (
+  (B: 1, A: 1, G: 1, F: 1, E: 1, D: 1, C: 1, LowBb: 1),
+  (B: 1, A: 1, G: 1, F: 1, E: 1, D: 1, C: 1, LowB: 1),
+  (B: 1, A: 1, G: 1, F: 1, E: 1, D: 1, C: 1),
+  (B: 1, A: 1, G: 1, F: 1, E: 1, D: 1, C: 1, LowCs: 1),
+  (B: 1, A: 1, G: 1, F: 1, E: 1, D: 1),
+  (B: 1, A: 1, G: 1, F: 1, E: 1, D: 1, Eb: 1),
+  (B: 1, A: 1, G: 1, F: 1, E: 1),
+  (B: 1, A: 1, G: 1, F: 1),
+  (B: 1, A: 1, G: 1, E: 1),
+  (B: 1, A: 1, G: 1),
+  (B: 1, A: 1, G: 1, Gs: 1),
+  (B: 1, A: 1),
+  (B: 1, A: 1, SideBb: 1),
+  (B: 1,),
+  (A: 1,),
+  (:),
+  (PalmD: 1,),
+  (PalmD: 1, PalmDs: 1),
+  (PalmD: 1, PalmDs: 1, SideE: 1),
+  (PalmD: 1, PalmDs: 1, SideE: 1, PalmF: 1),
+  (PalmD: 1, PalmDs: 1, SideE: 1, PalmF: 1, HighFs: 1),
+)
+
+
+#let major-scale-intervals = (0, 2, 4, 5, 7, 9, 11)
+
+#let is-in-key = (note, key) => {
+  calc.rem(note - key + 12, 12) in major-scale-intervals
+}
+
+#let get-all-sax-notes-in-scale = key => {
+  sax-codes.filter(k => is-in-key(k, key))
+}
+
+#let choice-function(k, choices, settings) = {
+  if k == 10 {
+    if "Bbis" in settings { "Bbis" } else { "SideBb" }
+  } else if k == 12 {
+    if "ShadowC" in settings { "ShadowC" } else { "SideC" }
+  } else if k == 13 {
+    if "ShadowCsAlt" in settings { "ShadowCsAlt" } else { "ShadowCs" }
+  } else {
+    choices.at(0)
+  }
+}
+
+#let diagram-indications-from-key(key) = {
+  let keys = (:)
+  for k in get-all-sax-notes-in-scale(key) {
+    let possibilities = main-choice-sax-key-from-note(k)
+    let settings = special-choices-settings.at(from-note-code(k), default: (:))
+    keys.insert(choice-function(k, possibilities, settings), green)
+  }
+  keys
+}
+
 
 // Draw key signature
 #let draw-key-signature-count(sharps-or-flats, width) = cetz.canvas({
@@ -71,4 +185,4 @@
   )
 })
 
-#let draw-key-signature(pc, width) = draw-key-signature-count(class-to-sharps-and-flats(pc), width)
+#let draw-key-signature(pc, width) = draw-key-signature-count(sharps-and-flats(pc), width)

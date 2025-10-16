@@ -235,31 +235,6 @@
   })
 })
 
-// Saxophone fingerings for MIDI notes 58-78 (Bb3 to F#5)
-#let sax-fingerings = (
-  (B: 1, A: 1, G: 1, F: 1, E: 1, D: 1, C: 1, LowBb: 1),
-  (B: 1, A: 1, G: 1, F: 1, E: 1, D: 1, C: 1, LowB: 1),
-  (B: 1, A: 1, G: 1, F: 1, E: 1, D: 1, C: 1),
-  (B: 1, A: 1, G: 1, F: 1, E: 1, D: 1, C: 1, Csharp: 1),
-  (B: 1, A: 1, G: 1, F: 1, E: 1, D: 1),
-  (B: 1, A: 1, G: 1, F: 1, E: 1, D: 1, Ds: 1),
-  (B: 1, A: 1, G: 1, F: 1, E: 1),
-  (B: 1, A: 1, G: 1, F: 1),
-  (B: 1, A: 1, G: 1, E: 1),
-  (B: 1, A: 1, G: 1),
-  (B: 1, A: 1, G: 1, Gs: 1),
-  (B: 1, A: 1),
-  (B: 1, A: 1, SideBb: 1),
-  (B: 1,),
-  (A: 1,),
-  (:),
-  (PalmD: 1,),
-  (PalmD: 1, PalmDs: 1),
-  (PalmD: 1, PalmDs: 1, SideE: 1),
-  (PalmD: 1, PalmDs: 1, SideE: 1, PalmF: 1),
-  (PalmD: 1, PalmDs: 1, SideE: 1, PalmF: 1, HighFs: 1),
-)
-
 // Sax fingering from MIDI note
 #let sax-fingering(midi) = {
   let idx = midi - 58
