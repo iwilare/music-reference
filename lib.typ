@@ -3,7 +3,7 @@
 #import cetz.draw: *
 
 #let from-note-code(idx) = {
-  ("C", "Cs", "D", "Eb", "E", "F", "Fs", "G", "Gs", "A", "Bb", "B").at(calc.rem(idx, 12))
+  ("C", "Db", "D", "Eb", "E", "F", "Fs", "G", "Ab", "A", "Bb", "B").at(calc.rem(idx, 12))
 }
 
 #let is-diatonic(idx) = {
@@ -11,7 +11,7 @@
 }
 
 #let note-name(idx) = {
-  ("C", "D♭", "D", "E♭", "E", "F", "G♭", "G", "A♭", "A", "B♭", "B").at(calc.rem(idx, 12))
+  ("C", "D♭", "D", "E♭", "E", "F", "F♯", "G", "A♭", "A", "B♭", "B").at(calc.rem(idx, 12))
 }
 
 #let from-note-name(name) = {
@@ -35,11 +35,11 @@
 
 #let main-choice-sax-keys = (
   ("LowBb",),    // -2
-  ("LowB",),     // 1
+  ("LowB",),     // -1
   ("LowC",),     // 0
   ("LowCs",),    // 1
   ("D",),        // 2
-  ("LowEb",),    // 3
+  ("Eb",),       // 3
   ("E",),        // 4
   ("F",),        // 5
   ("ShadowFs", "SideFs"), // 6
@@ -51,22 +51,23 @@
   ("ShadowC", "SideC"), // 12
   ("ShadowCs",),  // 13
   ("PalmD",),    // 14
-  ("PalmEb"),    // 15
+  ("PalmEb",),    // 15
   ("SideE",),    // 16
   ("PalmF",),    // 17
   ("HighFs",),   // 18
 )
 
 #let special-choices-settings = (
-  Cs: (:),
-  D:  ("ShadowCsAlt",),
-  Eb: (:),
-  E:  ("ShadowCsAlt",),
-  Gs: ("Bbis",),
-  A:  ("ShadowCsAlt",),
+  Db: ("Bbis",),
+  Eb: ("Bbis",),
   F:  ("Bbis",),
-  Bb: (:),
-  B:  ("ShadowCsAlt",),
+  Ab: ("Bbis",),
+  Bb: ("Bbis",),
+  D:  ("ShadowDbAlt",),
+  E:  ("ShadowDbAlt",),
+  A:  ("ShadowDbAlt",),
+  Fs: ("ShadowDbAlt",),
+  B:  ("ShadowDbAlt",),
 )
 
 #let special-effects = (
@@ -74,7 +75,7 @@
   D:  (:),
   Eb: ("SidewaysEb",),
   E:  ("SidewaysEb",),
-  Gs: ("SidewaysEb",),
+  Ab: ("SidewaysEb",),
   A:  (),
   F:  (),
   Bb: ("SidewaysEb",),
@@ -133,9 +134,9 @@
   if k == 10 {
     if "Bbis" in settings { "Bbis" } else { "SideBb" }
   } else if k == 12 {
-    if "ShadowC" in settings { "ShadowC" } else { "SideC" }
+    if "SideC" in settings { "SideC" } else { "ShadowC" }
   } else if k == 13 {
-    if "ShadowCsAlt" in settings { "ShadowCsAlt" } else { "ShadowCs" }
+    if "ShadowDbAlt" in settings { "ShadowDbAlt" } else { "ShadowDb" }
   } else {
     choices.at(0)
   }
@@ -143,14 +144,13 @@
 
 #let diagram-indications-from-key(key) = {
   let keys = (:)
+  let key-settings = special-choices-settings.at(from-note-code(key), default: (:))
   for k in get-all-sax-notes-in-scale(key) {
     let possibilities = main-choice-sax-key-from-note(k)
-    let settings = special-choices-settings.at(from-note-code(k), default: (:))
-    keys.insert(choice-function(k, possibilities, settings), green)
+    keys.insert(choice-function(k, possibilities, key-settings), green)
   }
   keys
 }
-
 
 // Draw key signature
 #let draw-key-signature-count(sharps-or-flats, width) = cetz.canvas({

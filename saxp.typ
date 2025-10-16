@@ -3,13 +3,6 @@
 #import cetz.draw: *
 #import "lib.typ": *
 
-// Convert pitch class to circle of fifths position
-#let class-to-sharps-and-flats(pc) = { (0, -5, 2, -3, 4, -1, 6, 1, -4, 3, -2, 5).at(calc.rem(pc, 12)) }
-
-#let note-name(idx) = {
-  ("C", "C♯", "D", "E♭", "E", "F", "F♯", "G", "G♯", "A", "B♭", "B").at(calc.rem(idx, 12))
-}
-
 #set text(font: "New Computer Modern Math", size: 14pt, weight: "bold")
 
 #let draw-simple-sax-diagram-scale(keys, default-color: white) = cetz.canvas(length: 1mm, {
@@ -40,7 +33,7 @@
   group({
     translate(..palm-cluster)
     palm-key((-0.6, 0), key-color("PalmD"))
-    palm-key((0, 2.6), key-color("PalmDs"))
+    palm-key((0, 2.6), key-color("PalmEb"))
     palm-key((2.2, 2.2), key-color("PalmF"))
     rect((0.7, 3.3),
          (rel: side-key-dimensions), fill: key-color("SideE"), stroke: stroke, radius: 1.5*smoothing-radius)
@@ -80,7 +73,7 @@
 
   // Upper stack keys
   group({
-    circle((-0.1, 0.3), radius: 0.9 * key-radius, fill: key-color("B"), stroke: stroke)
+    circle((-0.1, 0.3), radius: 0.9 * key-radius, fill: if "Bbis" in keys { key-color("Bbis") } else { key-color("B") }, stroke: stroke)
     circle((0.6, -1.1), radius: 0.6 * key-radius, fill: key-color("Bbis"), stroke: stroke)
   })
   circle(Ckey, radius: key-radius, fill: key-color("A"), stroke: stroke)
@@ -98,7 +91,7 @@
           fill: key-color("LowB"), stroke: stroke, radius: smoothing-radius)
     rect((small-sep/2, - side-key-height - small-sep),
          (rel: (left-pinky-radius, side-key-height)),
-          fill: key-color("Cs"), stroke: stroke, radius: smoothing-radius)
+          fill: key-color("LowCs"), stroke: stroke, radius: smoothing-radius)
     arc((-left-pinky-radius, - side-key-height - 2*small-sep), start: 180deg, stop: 360deg, radius: left-pinky-radius, fill: key-color("LowBb"), stroke: stroke, mode: "CLOSE")
   })
 
@@ -123,23 +116,22 @@
         start: 0deg, stop: 180deg, radius: bottom-pinky-radius,
         fill: key-color("Eb"), stroke: stroke, mode: "CLOSE")
   }
-  arc((rel: (-2*bottom-pinky-radius, - key-sep), to: d-sharp-key), start: 180deg, stop: 360deg, radius: bottom-pinky-radius, fill: key-color("C"), stroke: stroke, mode: "CLOSE")
+  arc((rel: (-2*bottom-pinky-radius, - key-sep), to: d-sharp-key), start: 180deg, stop: 360deg, radius: bottom-pinky-radius, fill: key-color("LowC"), stroke: stroke, mode: "CLOSE")
 
   // Side keys
   rect((-2.7*side-key-dimensions.at(0), - 2.3 * (side-key-dimensions.at(1) + small-sep)), (rel: side-key-dimensions), fill: key-color("SideBb"), stroke: stroke, radius: 1.5*smoothing-radius)
 
   // Side lower keys
+  let high-f-sharp = (1 * key-radius, 2 * key-radius)
+  let side-f-sharp = (0.6 * key-radius, 1.1 * key-radius)
   group({
+    rect((2.8, 1.8), (rel: high-f-sharp), fill: key-color("HighFs"), stroke: stroke, radius: 1.5*smoothing-radius)
     translate(..fsharp-cluster)
-    let high-f-sharp = (1 * key-radius, 2 * key-radius)
-    let side-f-sharp = (0.6 * key-radius, 1.1 * key-radius)
-
-    rect((-high-f-sharp.at(0)/2, 0), (rel: high-f-sharp), fill: key-color("HighFs"), stroke: stroke, radius: 1.5*smoothing-radius)
     circle((0, -1.5), radius: side-f-sharp, fill: key-color("SideFs"), stroke: stroke)
   })
 })
 
-#let draw-key-signature(pc, width) = draw-key-signature-count(class-to-sharps-and-flats(pc), width)
+#let draw-key-signature(pc, width) = draw-key-signature-count(sharps-and-flats(pc), width)
 
 #set text(font: "New Computer Modern")
 #set page(width: auto, height: auto, margin: 1cm)
@@ -169,3 +161,10 @@
 
 #generate-table(range(0, 12))
 #generate-table(range(0, 12).map(i => 7 * (i - 5)))
+
+
+#pagebreak
+Asd
+---
+#get-all-sax-notes-in-scale(-1)
+#diagram-indications-from-key(-1)

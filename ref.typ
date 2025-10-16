@@ -67,7 +67,7 @@
           fill: key-color("LowB"), stroke: stroke, radius: smoothing-radius)
     rect((small-sep/2, - side-key-height - small-sep),
          (rel: (left-pinky-radius, side-key-height)),
-          fill: key-color("Csharp"), stroke: stroke, radius: smoothing-radius)
+          fill: key-color("LowCs"), stroke: stroke, radius: smoothing-radius)
     arc((-left-pinky-radius, - side-key-height - 2*small-sep), start: 180deg, stop: 360deg, radius: left-pinky-radius, fill: key-color("LowBb"), stroke: stroke, mode: "CLOSE")
   })
 
@@ -81,7 +81,7 @@
 
   // Bottom pinky keys
   let bottom-pinky-radius = key-radius * 1.2
-  arc((rel: (bottom-pinky-radius, - key-radius - key-sep - bottom-pinky-radius)), start: 0deg, stop: 180deg, radius: bottom-pinky-radius, fill: key-color("Ds"), stroke: stroke, mode: "CLOSE")
+  arc((rel: (bottom-pinky-radius, - key-radius - key-sep - bottom-pinky-radius)), start: 0deg, stop: 180deg, radius: bottom-pinky-radius, fill: key-color("Eb"), stroke: stroke, mode: "CLOSE")
   arc((rel: (0, - key-sep)), start: 180deg, stop: 360deg, radius: bottom-pinky-radius, fill: key-color("C"), stroke: stroke, mode: "CLOSE")
 
   // Side keys
