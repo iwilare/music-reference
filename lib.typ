@@ -33,6 +33,10 @@
 // exclude the second octave since it's the same as the first
 #let sax-codes = range(-2, 18 + 1)
 
+#let get-all-relevant-codes = key => {
+  sax-codes.filter(i => calc.rem(i, 12) == calc.rem(key + 12, 12))
+}
+
 #let main-choice-sax-keys = (
   ("LowBb",),    // -2
   ("LowB",),     // -1
@@ -56,6 +60,10 @@
   ("PalmF",),    // 17
   ("HighFs",),   // 18
 )
+
+#let main-choice-sax-key-from-note = i => {
+  main-choice-sax-keys.at(i + 2)
+}
 
 #let special-choices-settings = (
   Db: ("Bbis",),
@@ -82,10 +90,6 @@
   B:  ("SidewaysEb",),
 )
 
-
-#let main-choice-sax-key-from-note = i => {
-  main-choice-sax-keys.at(calc.rem(i + 2, 21))
-}
 
 #let is-low = key => {
   key in (-2, 1, 0, 1)
@@ -130,7 +134,8 @@
   sax-codes.filter(k => is-in-key(k, key))
 }
 
-#let choice-function(k, choices, settings) = {
+#let choice-function(k, settings) = {
+  let choices = main-choice-sax-key-from-note(k)
   if k == 10 {
     if "Bbis" in settings { "Bbis" } else { "SideBb" }
   } else if k == 12 {
@@ -144,11 +149,24 @@
 
 #let diagram-indications-from-key(key) = {
   let keys = (:)
+
   let key-settings = special-choices-settings.at(from-note-code(key), default: (:))
+  let next-key-settings = special-choices-settings.at(from-note-code(key + 6), default: (:))
+  let previous-key-settings = special-choices-settings.at(from-note-code(key + 10), default: (:))
+
   for k in get-all-sax-notes-in-scale(key) {
-    let possibilities = main-choice-sax-key-from-note(k)
-    keys.insert(choice-function(k, possibilities, key-settings), green)
+    keys.insert(choice-function(k, key-settings),
+                if is-high(k) { blue } else { green })
   }
+  for v in get-all-relevant-codes(key + 6) {
+    keys.insert(choice-function(v, next-key-settings), yellow.lighten(80%))
+  }
+  /*
+  for v in get-all-relevant-codes(key + 10) {
+    keys.insert(choice-function(v, previous-key-settings), fuchsia.lighten(90%))
+  }
+  */
+
   keys
 }
 

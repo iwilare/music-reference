@@ -73,7 +73,7 @@
 
   // Upper stack keys
   group({
-    circle((-0.1, 0.3), radius: 0.9 * key-radius, fill: if "Bbis" in keys { key-color("Bbis") } else { key-color("B") }, stroke: stroke)
+    circle((-0.1, 0.3), radius: 0.9 * key-radius, fill: if "Bbis" in keys and "B" not in keys { key-color("Bbis") } else { key-color("B") }, stroke: stroke)
     circle((0.6, -1.1), radius: 0.6 * key-radius, fill: key-color("Bbis"), stroke: stroke)
   })
   circle(Ckey, radius: key-radius, fill: key-color("A"), stroke: stroke)
@@ -154,17 +154,15 @@
 
 ///////////////////////////////////////////////////////////////////////
 
-// Custom color for pressed keys
-#let key-red = rgb("#cc1212")
-
 #set text(font: "New Computer Modern Math", size: 14pt, weight: "bold")
 
 #generate-table(range(0, 12))
 #generate-table(range(0, 12).map(i => 7 * (i - 5)))
 
-
-#pagebreak
-Asd
----
-#get-all-sax-notes-in-scale(-1)
-#diagram-indications-from-key(-1)
+#let key = 1
+#draw-simple-sax-diagram-scale(diagram-indications-from-key(calc.rem(key, 12)))
+#from-note-code(key)
+#key
+#get-all-relevant-codes(key + 5)
+#diagram-indications-from-key(key)
+#get-all-sax-notes-in-scale(key)
