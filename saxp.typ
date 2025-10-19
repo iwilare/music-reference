@@ -27,6 +27,10 @@
   let palm-key(pos, fill-color) = {
     circle(pos, radius: (0.4, 1.4), fill: fill-color, stroke: stroke)
   }
+  let circle-key(pos, fill-color) = {
+    circle(pos, radius: 1, fill: fill-color, stroke: stroke)
+  }
+
   let side-key-dimensions = (0.9 * key-radius, 2 * key-radius)
 
   // Palm keys
@@ -139,14 +143,15 @@
 // Arranged in the order of the circle of fifths with C in the middle
 #let generate-table(keys) = {
   table(
-    columns: 12,
+    columns: keys.len(),
     align: center + horizon,
     stroke: 0.5pt,
     inset: 5pt,
-    table.header(..for i in keys { ([#note-name(i)],) }),
+    ..for i in keys { ([#note-name-circle-of-fifths(i)],) },
+    ..for i in keys { ([#set text(size: 10pt); #note-name-circle-of-fifths(i - 3)m],) },
     ..for i in keys { ([#draw-key-signature(i, 8mm)],) },
     ..for i in keys {
-      let dict = diagram-indications-from-key(calc.rem(i, 12))
+      let dict = diagram-indications-from-key(i)
       ([#draw-simple-sax-diagram-scale(dict)],)
     },
   )
@@ -157,12 +162,4 @@
 #set text(font: "New Computer Modern Math", size: 14pt, weight: "bold")
 
 #generate-table(range(0, 12))
-#generate-table(range(0, 12).map(i => 7 * (i - 5)))
-
-#let key = 1
-#draw-simple-sax-diagram-scale(diagram-indications-from-key(calc.rem(key, 12)))
-#from-note-code(key)
-#key
-#get-all-relevant-codes(key + 5)
-#diagram-indications-from-key(key)
-#get-all-sax-notes-in-scale(key)
+#generate-table(range(0, 15).map(i => 7 * (i - 7)))

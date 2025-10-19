@@ -14,19 +14,40 @@
   ("C", "D♭", "D", "E♭", "E", "F", "F♯", "G", "A♭", "A", "B♭", "B").at(calc.rem(idx, 12))
 }
 
+#let note-name-minor(idx) = {
+  ("C", "C♯", "D", "D♯", "E", "F", "F♯", "G", "G♯", "A", "B♭", "B").at(calc.rem(idx, 12))
+}
+
 #let from-note-name(name) = {
   zip(("C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"), range(0, 12))
      .find((v, i)  => v == name, default: (0, 0))
      .at(1)
 }
 
-#let note-name-sharp(idx) = {
+#let note-name-full-sharp(idx) = {
   ("B♯", "C♯", "D", "D♯", "E", "E♯", "F♯", "G", "G♯", "A", "A♯", "B").at(calc.rem(idx, 12))
 }
 
-#let note-name-flat(idx) = {
+#let note-name-full-flat(idx) = {
   ("C", "D♭", "D", "E♭", "F♭", "F", "G♭", "G", "A♭", "A", "B♭", "C♭").at(calc.rem(idx, 12))
 }
+
+#let note-name-cof-sharp(idx) = {
+
+}
+
+#let note-name-cof-flat(idx) = {
+  ("C", "D♭", "D", "E♭", "E", "F", "G♭", "G", "A♭", "A", "B♭", "C♭").at(calc.rem(idx, 12))
+}
+
+#let note-name-circle-of-fifths(idx) = {
+  if idx > 0 {
+    ("C", "C♯", "D", "D♯", "E", "F", "F♯", "G", "G♯", "A", "A♯", "B").at(calc.rem(idx, 12))
+   } else {
+    ("C", "D♭", "D", "E♭", "E", "F", "G♭", "G", "A♭", "A", "B♭", "C♭").at(calc.rem(idx, 12))
+  }
+}
+
 
 #let sharps-and-flats(pc) = { (0, -5, 2, -3, 4, -1, 6, 1, -4, 3, -2, 5).at(calc.rem(pc, 12)) }
 
@@ -149,6 +170,7 @@
 
 #let diagram-indications-from-key(key) = {
   let keys = (:)
+  let key = calc.rem(key, 12)
 
   let key-settings = special-choices-settings.at(from-note-code(key), default: (:))
   let next-key-settings = special-choices-settings.at(from-note-code(key + 6), default: (:))
