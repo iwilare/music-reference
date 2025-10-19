@@ -147,8 +147,8 @@
     align: center + horizon,
     stroke: 0.5pt,
     inset: 5pt,
-    ..for i in keys { ([#note-name-circle-of-fifths(i)],) },
-    ..for i in keys { ([#set text(size: 10pt); #note-name-circle-of-fifths(i - 3)m],) },
+    ..for i in keys { ([#note-name(i)],) },
+    ..for i in keys { ([#set text(size: 10pt); #note-name(i - 3)m],) },
     ..for i in keys { ([#draw-key-signature(i, 8mm)],) },
     ..for i in keys {
       let dict = diagram-indications-from-key(i)
@@ -161,5 +161,5 @@
 
 #set text(font: "New Computer Modern Math", size: 14pt, weight: "bold")
 
-#generate-table(range(0, 12))
-#generate-table(range(0, 15).map(i => 7 * (i - 7)))
+#generate-table(range(0, 12).map(i => i + 12*(0,-1,0,-1,0,0,0,0,-1,0,-1,0).at(i)))
+#generate-table(range(0, 15).map(i => 7 * i - 49))
