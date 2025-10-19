@@ -24,6 +24,12 @@
 
   let smoothing-radius = 0.2
 
+  // Main finger keys
+  let Ckey = (rel: (0, -2*key-radius - key-sep), to: (0, -0.6))
+  let Fkey = (0, -9)
+  let Ekey = (rel: (0, -2*key-radius - key-sep), to: Fkey)
+  let Dkey = (rel: (0, -2*key-radius - key-sep), to: Ekey)
+
   let palm-key(pos, fill-color) = {
     circle(pos, radius: (0.4, 1.4), fill: fill-color, stroke: stroke)
   }
@@ -42,15 +48,6 @@
     rect((0.7, 3.3),
          (rel: side-key-dimensions), fill: key-color("SideE"), stroke: stroke, radius: 1.5*smoothing-radius)
   })
-
-  // line((left-side-separation, 100), (left-side-separation, -100), stroke: stroke)
-
-  // Main finger keys
-
-  let Ckey = (rel: (0, -2*key-radius - key-sep), to: (0, -0.6))
-  let Fkey = (0, -9)
-  let Ekey = (rel: (0, -2*key-radius - key-sep), to: Fkey)
-  let Dkey = (rel: (0, -2*key-radius - key-sep), to: Ekey)
 
   if ("ShadowDb" in keys) {
     // (-2.1*key-radius, -1*key-radius))
@@ -137,9 +134,6 @@
 
 #let draw-key-signature(pc, width) = draw-key-signature-count(sharps-and-flats(pc), width)
 
-#set text(font: "New Computer Modern")
-#set page(width: auto, height: auto, margin: 1cm)
-
 // Arranged in the order of the circle of fifths with C in the middle
 #let generate-table(keys) = {
   table(
@@ -159,6 +153,8 @@
 
 ///////////////////////////////////////////////////////////////////////
 
+#set text(font: "New Computer Modern")
+#set page(width: auto, height: auto, margin: 1cm)
 #set text(font: "New Computer Modern Math", size: 14pt, weight: "bold")
 
 #generate-table(range(0, 12).map(i => i + 12*(0,-1,0,-1,0,0,0,0,-1,0,-1,0).at(i)))
