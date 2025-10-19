@@ -48,8 +48,13 @@
   }
 }
 
-
-#let sharps-and-flats(pc) = { (0, -5, 2, -3, 4, -1, 6, 1, -4, 3, -2, 5).at(calc.rem(pc, 12)) }
+#let sharps-and-flats(pc) = {
+  if pc > 0 {
+    (0, 5, 2, 3, 4, 1, 6, 1, 4, 3, 2, 5).at(calc.rem(pc, 12))
+  } else {
+    (0, -5, -2, -3, -4, -1, -6, -1, -4, -3, -2, -5).at(calc.rem(pc, 12))
+  }
+}
 
 // exclude the second octave since it's the same as the first
 #let sax-codes = range(-2, 18 + 1)
