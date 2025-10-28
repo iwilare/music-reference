@@ -19,11 +19,6 @@
   }
 }
 
-#let sharps-and-flats-simple(pc) = {
-  let fifths = calc.rem(pc * 7, 12)
-  if fifths > 6 { fifths - 12 } else { fifths }
-}
-
 #let sharps-and-flats(pc) = {
   let i = calc.rem(pc, 12)
   let data = (0, 7, 2, 3, 4, 1, 6, 1, 4, 3, 2, 5)

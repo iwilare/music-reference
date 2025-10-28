@@ -3,32 +3,10 @@
 #import cetz.draw: *
 #import "lib.typ": *
 
-#set text(font: "New Computer Modern Math", size: 14pt, weight: "bold")
-
 #let signature-sector(j, angle, mid-radius, outer-radius, sax-keys: false) = ({
   let pc = calc.rem(7 * j, 12)
   draw-key-signature(pc, 13mm)
-  // // Draw saxophone fingerings if enabled
-  // if sax-keys {
-  //   let sax-distance = 0.15
-  //   let fing-radius = sax-distance + 2 * rotated-sheet-distance + outer-radius
-  //   for x in range(58, 79) {
-  //     let fing-r = fing-radius + (x - 58) * 0.62
-  //     let fing-x = fing-r * calc.cos(angle * 1deg)
-  //     let fing-y = fing-r * calc.sin(angle * 1deg)
-  //     rotate(z: angle - counter-rotation)
-  //     content((fing-x, fing-y), sax-fingering(x))
-  //     rotate(z: -(angle - counter-rotation))
-  //   }
-  // }
 })
-
-#let inner-sector-note-minor(j, angle, mid-radius, outer-radius) = {
-  import cetz.draw: *
-  let pc = calc.rem(7 * j + 9, 12)
-  let note = note-name(pc)
-  text(font: "New Computer Modern Math", weight: "bold", size: 9.5pt, note + "m")
-}
 
 // Draw circular sectors
 #let draw-circular-sectors(radius, width, divisions, content-fn, fill: none, stroke: none, custom-distances: (i => 0mm)) = {
@@ -65,15 +43,38 @@
   }
 }
 
+#let inner-sector-note-minor(j, angle, mid-radius, outer-radius) = {
+  import cetz.draw: *
+  let pc = calc.rem(7 * j + 9, 12)
+  let note = note-name(pc)
+  text(weight: "bold", size: 9.5pt, note + "m")
+}
+
 // Sector node placement (default - major keys with fingerings)
 #let sector-node-default(j, angle, mid-radius, outer-radius) = cetz.canvas({
   import cetz.draw: *
-  let pc = calc.rem(7 * j, 12)
+  let pc = 7 * (calc.rem(j + 5, 12) - 5)
 
-  content((0,0), text(note-name(pc)))
+  if j == 5 {
+    floating(content((angle: angle, radius: -3.3mm), text(note-name(-(pc + 2)))))
+    floating(content((angle: angle, radius: +3.3mm), text(note-name(pc))))
+    content((0,0), [])
+  } else if j == 6 {
+    floating(content((angle: angle, radius: -3.3mm), text(note-name(-pc))))
+    floating(content((angle: angle, radius: +3.3mm), text(note-name(pc))))
+    content((0,0), [])
+  } else if j == 7 {
+    floating(content((angle: angle, radius: -3.4mm), text(note-name(pc))))
+    floating(content((angle: angle, radius: +3.8mm), text(note-name(-(pc - 2)))))
+    content((0,0), [])
+  } else {
+    content((0,0), text(note-name(pc)))
+  }
+  // content((0,0), [#-pc])
 
-  // sax note:
-  floating(content((0, -11pt), text(font: "New Computer Modern Math", fill: rgb("#565656"), weight: "regular", size: 9.5pt, note-name(pc - 2))))
+  // content((0,0), text(note-name(pc)))
+
+  // floating(content((0, -11pt), text(fill: rgb("#565656"), weight: "regular", size: 9.5pt, note-name(pc - 2))))
 })
 
 #let sheet-distance(j) = {
@@ -91,10 +92,15 @@
     draw-circular-sectors(radius, width, 12, fill: rgb(0, 0, 255, 30%), stroke: (thickness: 1.2pt, paint: black), sector-node-default)
     draw-circular-sectors(radius - width, width * 0.7, 12, fill: rgb(0, 0, 255, 30%), stroke: (thickness: 1.2pt, paint: black), inner-sector-note-minor)
     draw-circular-sectors(radius, 0mm, 12, signature-sector, custom-distances: sheet-distance)
+    let a = 360deg*7/12
+    let b = 360deg*11/12
+    arc-through(
+      (angle: a + 360deg*0.5/12, radius: radius - width/2),
+      (angle: a + 2*360deg*0.5/12, radius: radius - width/2),
+      (angle: b - 360deg*0.5/12, radius: radius - width/2))
   })
-
 }
 
-#set text(font: "New Computer Modern")
+#set text(size: 14pt, weight: "bold", font: "New Computer Modern Math")
 #set page(width: auto, height: auto, margin: 1cm)
 #circle-of-fifths(3.5cm, 1.3cm)
