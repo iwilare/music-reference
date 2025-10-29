@@ -15,15 +15,13 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Typst
-        uses: lvignoli/typst-action@main
+      - uses: actions/checkout@v5
+      - uses: typst-community/setup-typst@v4
         with:
-          source_file: |
-            sax.typ
-            circle.typ
+          typst-version: 0.13.1
+
+      - name: Build example
+        run: typst compile sax.typ circle.typ
 
       - name: Upload PDF file
         uses: actions/upload-artifact@v4
