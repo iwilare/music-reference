@@ -1,4 +1,4 @@
-#import "@preview/cetz:0.3.1"
+#import "@preview/cetz:0.4.2"
 
 #import cetz.draw: *
 
@@ -162,9 +162,9 @@
   let sharp(sep) = image("sharp.svg", height: 2.67 * sep)
 
   for i in range(5) {
-    line((0, i * staff-step), (staff-width, i * staff-step), stroke: stroke)
+    line((0pt, i * staff-step), (staff-width, i * staff-step), stroke: stroke)
   }
-  rect((0, 0), (staff-width, 4 * staff-step), stroke: stroke, fill: none)
+  rect((0pt, 0pt), (staff-width, 4 * staff-step), stroke: stroke, fill: none)
 
   let sharp-positions = (3.5, 2, 4, 2.5, 1, 3, 1.5)
   let flat-positions = (2, 3.5, 1.5, 3, 1, 2.5, 0.5)

@@ -1,4 +1,4 @@
-#import "@preview/cetz:0.3.1"
+#import "@preview/cetz:0.4.2"
 
 #import "lib.typ": note-name, sharps-and-flats, diagram-indications-from-key, draw-key-signature
 
@@ -46,8 +46,7 @@
     palm-key((-0.6, 0), key-color("PalmD"))
     palm-key((0, 2.6), key-color("PalmEb"))
     palm-key((2.2, 2.2), key-color("PalmF"))
-    rect((0.7, 3.3),
-         (rel: side-key-dimensions), fill: key-color("SideE"), stroke: stroke, radius: 1.5*smoothing-radius)
+    rect((0.7, 3.3), (rel: side-key-dimensions), fill: key-color("SideE"), stroke: stroke, radius: 1.5*smoothing-radius)
   })
 
   if ("ShadowDb" in keys) {
