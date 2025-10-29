@@ -134,7 +134,7 @@
 })
 
 // Arranged in the order of the circle of fifths with C in the middle
-#let generate-table(keys) = {
+#let generate-table(keys, show-alterations: false) = {
   table(
     columns: range(0, keys.len()).map(i => 30pt),
     align: center + horizon,
@@ -146,7 +146,10 @@
       scale(70%, cetz.canvas({ draw-key-signature(i, max-sharps: 7) }))
       ,) },
     ..for i in keys {
-      let dict = diagram-indications-from-key(i, changes: if i < 0 { ("show-flat",) } else { ("show-sharp",) })
+      let dict = diagram-indications-from-key(i, changes:
+      if show-alterations {
+        if i < 0 { ("show-flat",) } else { ("show-sharp",) }
+      } else { (:) })
       (draw-simple-sax-diagram-scale(dict),)
     },
   )
@@ -158,5 +161,5 @@
 #set page(width: auto, height: auto, margin: 1cm)
 #set text(font: "New Computer Modern Math", size: 14pt, weight: "bold")
 
-#generate-table(range(0, 12).map(i => i + 12*(0,-1,0,-1,0,0,0,0,-1,0,-1,0).at(i)))
-#generate-table(range(0, 15).map(i => 7 * i - 49))
+#generate-table(range(0, 12).map(i => i + 12*(0,-1,0,-1,0,-1,0,0,-1,0,-1,0).at(i)))
+#generate-table(range(0, 15).map(i => 7 * i - 49), show-alterations: true)
