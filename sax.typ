@@ -1,7 +1,8 @@
 #import "@preview/cetz:0.3.1"
 
-#import cetz.draw: *
-#import "lib.typ": *
+#import "lib.typ": note-name, sharps-and-flats, diagram-indications-from-key, draw-key-signature
+
+#import cetz.draw: circle, line, arc, arc-through
 
 #set text(font: "New Computer Modern Math", size: 14pt, weight: "bold")
 
@@ -132,21 +133,21 @@
   })
 })
 
-#let draw-key-signature(pc, width) = draw-key-signature-count(sharps-and-flats(pc), width)
-
 // Arranged in the order of the circle of fifths with C in the middle
 #let generate-table(keys) = {
   table(
-    columns: keys.len(),
+    columns: range(0, keys.len()).map(i => 30pt),
     align: center + horizon,
     stroke: 0.5pt,
-    inset: 5pt,
+    inset: (0pt, 3pt),
     ..for i in keys { ([#note-name(i)],) },
     ..for i in keys { ([#set text(size: 10pt); #note-name(i - 3)m],) },
-    ..for i in keys { ([#draw-key-signature(i, 8mm)],) },
+    ..for i in keys { (
+      scale(70%, cetz.canvas({ draw-key-signature(i, max-sharps: 7) }))
+      ,) },
     ..for i in keys {
-      let dict = diagram-indications-from-key(i)
-      ([#draw-simple-sax-diagram-scale(dict)],)
+      let dict = diagram-indications-from-key(i, changes: if i < 0 { ("show-flat",) } else { ("show-sharp",) })
+      (draw-simple-sax-diagram-scale(dict),)
     },
   )
 }

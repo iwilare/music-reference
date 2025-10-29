@@ -124,7 +124,7 @@
   }
 }
 
-#let diagram-indications-from-key(key) = {
+#let diagram-indications-from-key(key, changes: ()) = {
   let keys = (:)
   let key = calc.rem(key, 12)
 
@@ -136,25 +136,26 @@
     keys.insert(choice-function(k, key-settings),
                 if is-high(k) { blue } else { green })
   }
-  for v in get-all-relevant-codes(key + 6) {
-    keys.insert(choice-function(v, next-key-settings), yellow.lighten(80%))
+  if "show-sharp" in changes {
+    for v in get-all-relevant-codes(key + 6) {
+      keys.insert(choice-function(v, next-key-settings), yellow.lighten(80%))
+    }
   }
-  /*
-  for v in get-all-relevant-codes(key + 10) {
-    keys.insert(choice-function(v, previous-key-settings), fuchsia.lighten(90%))
+  if "show-flat" in changes {
+    for v in get-all-relevant-codes(key + 10) {
+      keys.insert(choice-function(v, previous-key-settings), fuchsia.lighten(80%))
+    }
   }
-  */
 
   keys
 }
 
 // Draw key signature
-#let draw-key-signature-count(sharps-or-flats, width) = cetz.canvas({
-  let staff-width = width
-  let width = width / 9
-
-  let staff-step = width
-  let thickness = 0.15 * width
+#let draw-key-signature-count(sharps-or-flats, max-sharps: 6) = {
+  let sharp-offset = 2.1677pt
+  let staff-step = 4.09pt
+  let staff-width = max-sharps * (staff-step + 0.4pt) + 2 * sharp-offset
+  let thickness = 0.61pt
   let stroke = (thickness: thickness, paint: black)
 
   let flat(sep) = image("flat.svg", height: 2.22 * sep)
@@ -171,14 +172,14 @@
   floating(
     if sharps-or-flats > 0 {
       for i in range(sharps-or-flats) {
-        content(((staff-step + 0.1 * width) * i + staff-step + 0.1 * width, staff-step * sharp-positions.at(i) + 0.53 * width), sharp(staff-step))
+        content(((staff-step + 0.4pt) * i + staff-step + 0.2pt, staff-step * sharp-positions.at(i) + sharp-offset), sharp(staff-step))
       }
     } else if sharps-or-flats < 0 {
       for i in range(calc.abs(sharps-or-flats)) {
-        content((staff-step * i + staff-step + 0.1mm, staff-step * flat-positions.at(i) + 0.51 * width), flat(staff-step))
+        content(((staff-step + 0.0pt) * i + staff-step + 0.2pt, staff-step * flat-positions.at(i) + 2.0859pt), flat(staff-step))
       }
     }
   )
-})
+}
 
-#let draw-key-signature(pc, width) = draw-key-signature-count(sharps-and-flats(pc), width)
+#let draw-key-signature(pc, max-sharps: 6) = draw-key-signature-count(sharps-and-flats(pc), max-sharps: max-sharps)

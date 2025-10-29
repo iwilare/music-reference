@@ -4,12 +4,12 @@
 #import "lib.typ": *
 
 #let signature-sector(j, angle, mid-radius, outer-radius, sax-keys: false) = ({
-  let pc = calc.rem(7 * j, 12)
-  draw-key-signature(pc, 13mm)
+  let pc = 7 * (calc.rem(j + 5, 12) - 5)
+  cetz.canvas({ draw-key-signature(pc, max-sharps: 6) })
 })
 
 // Draw circular sectors
-#let draw-circular-sectors(radius, width, divisions, content-fn, fill: none, stroke: none, custom-distances: (i => 0mm)) = {
+#let draw-circular-sectors(radius, width, divisions, content-fn, fill: none, stroke: none, custom-distances: (i => 0mm), rotate-content: false) = {
   let inner-radius = radius - width
   let angle-step = 360deg / divisions
   let offset = angle-step / 2.0
@@ -34,7 +34,9 @@
       })
     }
 
-    content((angle: angle, radius: mid-radius + custom-distances(i)), content-fn(i, angle, mid-radius, radius))
+    content((angle: angle, radius: mid-radius + custom-distances(i)),
+             angle: (if rotate-content != none { rotate-content(angle) } else { 0deg }),
+             content-fn(i, angle, mid-radius, radius))
   }
 
   if stroke != none {
@@ -45,7 +47,7 @@
 
 #let inner-sector-note-minor(j, angle, mid-radius, outer-radius) = {
   import cetz.draw: *
-  let pc = calc.rem(7 * j + 9, 12)
+  let pc = 7 * (calc.rem(j + 5, 12) - 5) - 3
   let note = note-name(pc)
   text(weight: "bold", size: 9.5pt, note + "m")
 }
@@ -55,26 +57,7 @@
   import cetz.draw: *
   let pc = 7 * (calc.rem(j + 5, 12) - 5)
 
-  if j == 5 {
-    floating(content((angle: angle, radius: -3.3mm), text(note-name(-(pc + 2)))))
-    floating(content((angle: angle, radius: +3.3mm), text(note-name(pc))))
-    content((0,0), [])
-  } else if j == 6 {
-    floating(content((angle: angle, radius: -3.3mm), text(note-name(-pc))))
-    floating(content((angle: angle, radius: +3.3mm), text(note-name(pc))))
-    content((0,0), [])
-  } else if j == 7 {
-    floating(content((angle: angle, radius: -3.4mm), text(note-name(pc))))
-    floating(content((angle: angle, radius: +3.8mm), text(note-name(-(pc - 2)))))
-    content((0,0), [])
-  } else {
-    content((0,0), text(note-name(pc)))
-  }
-  // content((0,0), [#-pc])
-
-  // content((0,0), text(note-name(pc)))
-
-  // floating(content((0, -11pt), text(fill: rgb("#565656"), weight: "regular", size: 9.5pt, note-name(pc - 2))))
+  content((0,0), text(note-name(pc)))
 })
 
 #let sheet-distance(j) = {
@@ -87,20 +70,22 @@
   (top, second, long, side, long, second, bottom, second, long, side, long, second).at(calc.rem(j, 12))
 }
 
-#let circle-of-fifths(radius, width) = {
+#let circle-of-fifths(radius, outer-width, inner-width, sheet-distance: sheet-distance, rotate-content: none) = {
   cetz.canvas({
-    draw-circular-sectors(radius, width, 12, fill: rgb(0, 0, 255, 30%), stroke: (thickness: 1.2pt, paint: black), sector-node-default)
-    draw-circular-sectors(radius - width, width * 0.7, 12, fill: rgb(0, 0, 255, 30%), stroke: (thickness: 1.2pt, paint: black), inner-sector-note-minor)
-    draw-circular-sectors(radius, 0mm, 12, signature-sector, custom-distances: sheet-distance)
-    let a = 360deg*7/12
-    let b = 360deg*11/12
-    arc-through(
-      (angle: a + 360deg*0.5/12, radius: radius - width/2),
-      (angle: a + 2*360deg*0.5/12, radius: radius - width/2),
-      (angle: b - 360deg*0.5/12, radius: radius - width/2))
+    draw-circular-sectors(radius, outer-width, 12, fill: rgb(0, 0, 255, 30%), stroke: (thickness: 1.2pt, paint: black), sector-node-default, rotate-content: rotate-content)
+    draw-circular-sectors(radius - outer-width, inner-width, 12, fill: rgb(0, 0, 255, 30%), stroke: (thickness: 1.2pt, paint: black), inner-sector-note-minor, rotate-content: rotate-content)
+    draw-circular-sectors(radius, 0mm, 12, signature-sector, custom-distances: sheet-distance, rotate-content: rotate-content)
   })
 }
 
 #set text(size: 14pt, weight: "bold", font: "New Computer Modern Math")
 #set page(width: auto, height: auto, margin: 1cm)
-#circle-of-fifths(3.5cm, 1.3cm)
+#circle-of-fifths(3.0cm, 1cm, 0.8cm)
+
+#set text(size: 14pt, weight: "bold", font: "New Computer Modern Math")
+#set page(width: auto, height: auto, margin: 1cm)
+#circle-of-fifths(2.7cm, 0.9cm, 0.85cm, sheet-distance: _ => 8mm, rotate-content: angle => angle)
+
+#set text(size: 14pt, weight: "bold", font: "New Computer Modern Math")
+#set page(width: auto, height: auto, margin: 1cm)
+#circle-of-fifths(2.7cm, 0.8cm, 0.6cm, sheet-distance: _ => 4.9mm, rotate-content: angle => angle - 90deg)
