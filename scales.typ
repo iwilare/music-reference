@@ -1,6 +1,6 @@
 #import "@preview/cetz:0.4.2"
 
-#import "lib.typ": note-name, sharps-and-flats, diagram-indications-from-key, draw-key-signature
+#import "lib.typ": *
 
 #import cetz.draw: circle, line, arc, arc-through
 
@@ -133,21 +133,21 @@
 })
 
 // Arranged in the order of the circle of fifths with C in the middle
-#let generate-table(keys, show-alterations: false) = {
+#let generate-table(k, show-alterations: false) = {
+  let arr = get-all-sax-notes-in-scale(k);
   table(
-    columns: range(0, keys.len()).map(i => 30pt),
+    columns: range(arr.len(), 0),
     align: center + horizon,
     stroke: 0.5pt,
-    inset: (0pt, 3pt),
-    ..for i in keys { ([#note-name(i)],) },
-    ..for i in keys { ([#set text(size: 10pt); #note-name(i - 3)m],) },
-    ..for i in keys { (
-      scale(70%, cetz.canvas({ draw-key-signature(i, max-sharps: 7) }))
-      ,) },
-    ..for i in keys {
-      let dict = diagram-indications-from-key(i)
-      (draw-simple-sax-diagram-scale(dict),)
-    },
+    inset: (0pt, 0pt),
+    // ..for i in keys { ([#note-name(i)],) },
+    // ..for i in keys { ([#set text(size: 10pt); #note-name(i - 3)m],) },
+    // ..for i in keys { (
+    //   scale(70%, cetz.canvas({ draw-key-signature(i, max-sharps: 7) }))
+    //   ,) },
+    ..for note in arr.rev() {
+      let dict = sax-fingering-from-note(note, red)
+      (rotate(-90deg, reflow: true, draw-simple-sax-diagram-scale(dict)),) },
   )
 }
 
@@ -157,5 +157,8 @@
 #set page(width: auto, height: auto, margin: 1cm)
 #set text(font: "New Computer Modern Math", size: 14pt, weight: "bold")
 
-#generate-table(range(0, 12).map(i => i + 12*(0,-1,0,-1,0,-1,0,0,-1,0,-1,0).at(i)))
-#generate-table(range(0, 15).map(i => 7 * i - 49), show-alterations: true)
+// #generate-table(range(0, 12).map(i => i + 12*(0,-1,0,-1,0,-1,0,0,-1,0,-1,0).at(i)))
+
+// #generate-table(range(0, 15).map(i => 7 * i - 49), show-alterations: true)
+
+#generate-table(0)

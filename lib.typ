@@ -1,7 +1,5 @@
 #import "@preview/cetz:0.4.2"
 
-#import cetz.draw: *
-
 #let mod12(n) = {
   let r = calc.rem(n, 12)
   if r < 0 { r + 12 } else { r }
@@ -77,29 +75,33 @@
   key in (14, 15, 16, 17, 18)
 }
 
-#let sax-fingerings = (
-  (B: 1, A: 1, G: 1, F: 1, E: 1, D: 1, C: 1, LowBb: 1),
-  (B: 1, A: 1, G: 1, F: 1, E: 1, D: 1, C: 1, LowB: 1),
-  (B: 1, A: 1, G: 1, F: 1, E: 1, D: 1, C: 1),
-  (B: 1, A: 1, G: 1, F: 1, E: 1, D: 1, C: 1, LowCs: 1),
-  (B: 1, A: 1, G: 1, F: 1, E: 1, D: 1),
-  (B: 1, A: 1, G: 1, F: 1, E: 1, D: 1, Eb: 1),
-  (B: 1, A: 1, G: 1, F: 1, E: 1),
-  (B: 1, A: 1, G: 1, F: 1),
-  (B: 1, A: 1, G: 1, E: 1),
-  (B: 1, A: 1, G: 1),
-  (B: 1, A: 1, G: 1, Gs: 1),
-  (B: 1, A: 1),
-  (B: 1, A: 1, SideBb: 1),
-  (B: 1,),
-  (A: 1,),
-  (:),
-  (PalmD: 1,),
-  (PalmD: 1, PalmDs: 1),
-  (PalmD: 1, PalmDs: 1, SideE: 1),
-  (PalmD: 1, PalmDs: 1, SideE: 1, PalmF: 1),
-  (PalmD: 1, PalmDs: 1, SideE: 1, PalmF: 1, HighFs: 1),
-)
+#let sax-fingering-from-note = (note, color) => {
+  let c = color;
+  let sax-fingerings = (
+    (B: c, A: c, G: c, F: c, E: c, D: c, LowC: c, LowBb: c),
+    (B: c, A: c, G: c, F: c, E: c, D: c, LowC: c, LowB: c),
+    (B: c, A: c, G: c, F: c, E: c, D: c, LowC: c),
+    (B: c, A: c, G: c, F: c, E: c, D: c, LowC: c, LowCs: c),
+    (B: c, A: c, G: c, F: c, E: c, D: c),
+    (B: c, A: c, G: c, F: c, E: c, D: c, Eb: c),
+    (B: c, A: c, G: c, F: c, E: c),
+    (B: c, A: c, G: c, F: c),
+    (B: c, A: c, G: c, E: c),
+    (B: c, A: c, G: c),
+    (B: c, A: c, G: c, Gs: c),
+    (B: c, A: c),
+    (B: c, A: c, SideBb: c),
+    (B: c,),
+    (A: c,),
+    (:),
+    (PalmD: c,),
+    (PalmD: c, PalmDs: c),
+    (PalmD: c, PalmDs: c, SideE: c),
+    (PalmD: c, PalmDs: c, SideE: c, PalmF: c),
+    (PalmD: c, PalmDs: c, SideE: c, PalmF: c, HighFs: c),
+  )
+  sax-fingerings.at(note + 2)
+}
 
 #let major-scale-intervals = (0, 2, 4, 5, 7, 9, 11)
 
@@ -124,7 +126,7 @@
   }
 }
 
-#let diagram-indications-from-key(key, changes: ()) = {
+#let diagram-indications-from-key(key) = {
   let keys = (:)
   let key = calc.rem(key, 12)
 
@@ -136,17 +138,6 @@
     keys.insert(choice-function(k, key-settings),
                 if is-high(k) { blue } else { green })
   }
-  if "show-sharp" in changes {
-    for v in get-all-relevant-codes(key + 6) {
-      keys.insert(choice-function(v, next-key-settings), yellow.lighten(80%))
-    }
-  }
-  if "show-flat" in changes {
-    for v in get-all-relevant-codes(key + 10) {
-      keys.insert(choice-function(v, previous-key-settings), fuchsia.lighten(80%))
-    }
-  }
-
   keys
 }
 
