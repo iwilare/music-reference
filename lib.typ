@@ -95,10 +95,10 @@
     (A: c,),
     (:),
     (PalmD: c,),
-    (PalmD: c, PalmDs: c),
-    (PalmD: c, PalmDs: c, SideE: c),
-    (PalmD: c, PalmDs: c, SideE: c, PalmF: c),
-    (PalmD: c, PalmDs: c, SideE: c, PalmF: c, HighFs: c),
+    (PalmD: c, PalmEb: c),
+    (PalmD: c, PalmEb: c, SideE: c),
+    (PalmD: c, PalmEb: c, SideE: c, PalmF: c),
+    (PalmD: c, PalmEb: c, SideE: c, PalmF: c, HighFs: c),
   )
   sax-fingerings.at(note + 2)
 }

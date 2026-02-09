@@ -45,8 +45,8 @@
     translate(..palm-cluster)
     palm-key((-0.6, 0), key-color("PalmD"))
     palm-key((0, 2.6), key-color("PalmEb"))
-    palm-key((2.2, 2.2), key-color("PalmF"))
-    rect((0.7, 3.3), (rel: side-key-dimensions), fill: key-color("SideE"), stroke: stroke, radius: 1.5*smoothing-radius)
+    palm-key((1.0, 1.3), key-color("PalmF"))
+    rect((-3.75, -4), (rel: side-key-dimensions), fill: key-color("SideE"), stroke: stroke, radius: 1.5*smoothing-radius)
   })
 
   if ("ShadowDb" in keys) {
