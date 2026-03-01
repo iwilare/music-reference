@@ -1,5 +1,7 @@
 #import "@preview/cetz:0.4.2"
 
+#import cetz.draw: *
+
 #let mod12(n) = {
   let r = calc.rem(n, 12)
   if r < 0 { r + 12 } else { r }
@@ -47,7 +49,7 @@
     ("SideBb", "Bbis"),     // 10
     ("B",),                 // 11
     ("ShadowC", "SideC"),   // 12
-    ("ShadowCs",),          // 13
+    ("ShadowDbAlt",),       // 13
     ("PalmD",),             // 14
     ("PalmEb",),            // 15
     ("SideE",),             // 16
@@ -109,8 +111,14 @@
   mod12(note - key) in major-scale-intervals
 }
 
+#let calculate-grade = (key, note) => {
+  let interval = mod12(note - key)
+  major-scale-intervals.position(x => x == interval)
+}
+
 #let get-all-sax-notes-in-scale = key => {
   sax-codes.filter(k => is-in-key(k, key))
+  .map(x => (x, calculate-grade(key, x)))
 }
 
 #let choice-function(k, settings) = {
@@ -126,17 +134,14 @@
   }
 }
 
-#let diagram-indications-from-key(key) = {
+#let diagram-indications-from-key(key, get-color, get-text) = {
   let keys = (:)
   let key = calc.rem(key, 12)
-
   let key-settings = special-choices-settings.at(key, default: (:))
-  let next-key-settings = special-choices-settings.at(key + 6, default: (:))
-  let previous-key-settings = special-choices-settings.at(key + 10, default: (:))
-
-  for k in get-all-sax-notes-in-scale(key) {
-    keys.insert(choice-function(k, key-settings),
-                if is-high(k) { blue } else { green })
+  for (i, (v, mode)) in get-all-sax-notes-in-scale(key).enumerate() {
+    keys.insert(
+      choice-function(v, key-settings),
+       (get-color(i, v, mode), get-text(i, v, mode)))
   }
   keys
 }
@@ -173,4 +178,4 @@
   )
 }
 
-#let draw-key-signature(pc, max-sharps: 6) = draw-key-signature-count(sharps-and-flats(pc), max-sharps: max-sharps)
+#let draw-key-signature(pc, max-sharps: 6) = draw-key-signature-count(sharps-and-flats(pc), max-sharps: 6)
