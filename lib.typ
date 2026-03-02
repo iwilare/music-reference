@@ -1,6 +1,6 @@
 #import "@preview/cetz:0.4.2"
 
-#import cetz.draw: *
+#import cetz.draw: line, rect, circle, group, translate, floating, content
 
 #let mod12(n) = {
   let r = calc.rem(n, 12)

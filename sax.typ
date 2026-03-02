@@ -6,17 +6,6 @@
 
 #set text(font: "New Computer Modern Math", size: 14pt, weight: "bold")
 
-// Colors for Roman numerals I..VII
-#let roman-numeral-colors = (
-  red,
-  orange,
-  yellow,
-  green,
-  blue,
-  purple,
-  black,
-)
-
 #let draw-simple-sax-diagram-scale(keys, default-color: white) = cetz.canvas(length: 1mm, {
   import cetz.draw: *
 
@@ -192,8 +181,19 @@
 #set page(width: auto, height: auto, margin: 1cm)
 #set text(font: "New Computer Modern Math", size: 14pt, weight: "bold")
 
-#let get-color(i, v, mode) = if is-high(v) { blue } else { green }
-#let get-text(i, v, mode) = if show-roman { str(mode + 1) } else { "" }
+// Colors for Roman numerals I..VII
+#let roman-numeral-colors = (
+  white,  // 1
+  yellow, // 2
+  green,  // 3
+  rgb("#f2b6ff"), // pink 4
+  red,    // 5
+  orange, // 6
+  gray    // 7
+)
+
+#let get-color(i, v, mode) = roman-numeral-colors.at(mode)
+#let get-text(i, v, mode) = str(mode + 1)
 
 #generate-table(range(0, 12).map(i => i + 12*(0,-1,0,-1,0,-1,0,0,-1,0,-1,0).at(i)),
    get-color, get-text)
