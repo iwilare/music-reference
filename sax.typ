@@ -183,12 +183,12 @@
 
 // Colors for Roman numerals I..VII
 #let roman-numeral-colors = (
-  white,  // 1
+  rgb("#f1f1f1"),  // 1 lighter gray
   yellow, // 2
   green,  // 3
-  rgb("#f2b6ff"), // pink 4
+  rgb("#f2b6ff"), // 4 pink
   red,    // 5
-  orange, // 6
+  blue,   // 6
   gray    // 7
 )
 
