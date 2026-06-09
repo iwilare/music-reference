@@ -23,6 +23,8 @@ jobs:
         run: typst compile sax.typ
       - name: Build 2
         run: typst compile circle.typ
+      - name: Build 3
+        run: typst compile pcb.typ
       - name: Upload PDF file
         uses: actions/upload-artifact@v4
         with:

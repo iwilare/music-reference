@@ -1,6 +1,6 @@
 #import "@preview/cetz:0.4.2"
 
-#import cetz.draw: line, rect, circle, group, translate, floating, content
+#import cetz.draw: line, rect, circle, group, translate, floating, content, arc-through
 
 #let mod12(n) = {
   let r = calc.rem(n, 12)
@@ -13,9 +13,9 @@
 
 #let note-name(idx) = {
   if idx > 0 {
-    ([C], [C♯], [D], [D♯], [E], [F], [F♯], [G], [G♯], [A], [A♯], [B]).at(mod12(idx))
+    ([C], [C♯], [D], [D♯], [E], [F], [#h(6pt)F#h(-2pt)♯], [G], [G♯], [A], [A♯], [B]).at(mod12(idx))
    } else {
-    ([C], [D♭], [D], [E♭], [E], [F], [G♭], [G], [A♭], [A], [B♭], [B]).at(mod12(idx))
+    ([C], [#h(6pt)D#h(-2pt)♭], [D], [#h(6pt)E#h(-2pt)♭], [E], [F], [#h(6pt)G#h(-2pt)♭], [G], [#h(6pt)A#h(-2pt)♭], [A], [#h(6pt)B#h(-2pt)♭], [#h(6pt)C#h(-2pt)♭]).at(mod12(idx))
   }
 }
 
@@ -179,3 +179,87 @@
 }
 
 #let draw-key-signature(pc, max-sharps: 6) = draw-key-signature-count(sharps-and-flats(pc), max-sharps: 6)
+
+
+#let signature-sector(j, angle, mid-radius, outer-radius, sax-keys: false, color) = ({
+  let pc = 7 * (calc.rem(j + 5, 12) - 5)
+  cetz.canvas({ draw-key-signature(pc, max-sharps: 6) })
+})
+
+// Draw circular sectors
+#let draw-circular-sectors(radius, width, divisions, content-fn, fill: none, stroke: none, custom-distances: (i => 0mm), rotate-content: false, paint: none) = {
+  let inner-radius = radius - width
+  let angle-step = 360deg / divisions
+  let offset = angle-step / 2.0
+
+  for i in range(divisions) {
+    let start-angle = 90deg - i * angle-step + offset
+    let end-angle = start-angle - angle-step
+    let angle = start-angle - angle-step / 2.0
+    let mid-radius = radius - width / 2.0
+
+    let a = (angle: start-angle, radius: inner-radius)
+    let b = (angle: start-angle, radius: radius)
+    let c = (angle: end-angle, radius: radius)
+    let d = (angle: end-angle, radius: inner-radius)
+
+    if fill != none {
+      cetz.draw.merge-path(fill: fill, stroke: white, close: true, {
+        arc-through(b, (angle: angle, radius: radius), c)
+        arc-through(d, (angle: angle, radius: inner-radius), a)
+      })
+    }
+
+    if(custom-distances != none) {
+      content((angle: angle, radius: mid-radius + custom-distances(i)),
+              angle: (if rotate-content != none { rotate-content(angle) } else { 0deg }),
+              content-fn(i, angle, mid-radius, radius, paint))
+    }
+  }
+
+  circle((0, 0), radius: radius, stroke: stroke)
+  circle((0, 0), radius: inner-radius, stroke: stroke)
+}
+
+#let inner-sector-note-minor(j, angle, mid-radius, outer-radius, paint) = {
+  import cetz.draw: *
+  let pc = 7 * (calc.rem(j + 5, 12) - 5) - 3
+  let note = note-name(pc)
+  text(weight: "bold", size: 9.5pt, note + "m")
+}
+
+// Sector node placement (default - major keys with fingerings)
+#let sector-node-default(j, angle, mid-radius, outer-radius, paint) = cetz.canvas({
+  import cetz.draw: *
+  let pc = 7 * (calc.rem(j + 5, 12) - 5)
+
+  content((0,0), text(note-name(pc), fill: paint))
+})
+
+#let sheet-distance(j) = {
+  // guideline for sheet spacing: circle((0, 0), radius: radius + 0.2cm)
+  let top = 5.2mm;
+  let second = 7.5mm;
+  let bottom = 6.2mm;
+  let long = 9.2mm;
+  let side = 8.6mm;
+  (top, second, long, side, long, second, bottom, second, long, side, long, second).at(calc.rem(j, 12))
+}
+
+#let circle-of-fifths(radius, outer-width, inner-width, sheet-distance: none, rotate-content: none) = {
+  cetz.canvas({
+    draw-circular-sectors(radius, outer-width, 12, fill: rgb(0, 0, 255, 30%), stroke: (thickness: 1.2pt, paint: black), sector-node-default, rotate-content: rotate-content, paint: black)
+    draw-circular-sectors(radius - outer-width, inner-width, 12, fill: rgb(0, 0, 255, 30%), stroke: (thickness: 1.2pt, paint: black), inner-sector-note-minor, rotate-content: rotate-content, paint: black)
+    draw-circular-sectors(radius, 0mm, 12, signature-sector, custom-distances: sheet-distance, rotate-content: rotate-content, paint: black)
+  })
+}
+
+#set text(size: 14pt, weight: "bold", font: "Senobi Gothic")
+#set page(width: auto, height: auto, margin: 0.1cm)
+#let radius = 1.7cm
+#let outer-width = 0.7cm
+#let rotate-content = angle => angle - 90deg
+
+#cetz.canvas({
+  draw-circular-sectors(radius, outer-width, 12, fill: rgb("#000000"), paint: white, sector-node-default, rotate-content: rotate-content)
+})
